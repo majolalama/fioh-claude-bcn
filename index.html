@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensible Harness Deep Dive</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* Brand palette: templates/skills/assess-repo/body.md (Thoughtworks brand colours) */
+  :root {
+    --wave: #033d4f;
+    --wave-deep: #022a37;
+    --mist: #edf1f3;
+    --sapphire: #47a1ad;
+    --jade: #6b9e78;
+    --amethyst: #634f7d;
+    --turmeric: #cc850b;
+    --flamingo: #f2617a;
+    --text-dim: #9fbac4;
+    --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+    --pixel: 'Press Start 2P', var(--mono);
+    --sans: 'Inter', -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--wave-deep); color: var(--mist); font-family: var(--sans); }
+  body::before { /* pixel grid */
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .5;
+    background-image: linear-gradient(rgba(71,161,173,.07) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(71,161,173,.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .deck { height: 100vh; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; position: relative; }
+  section { min-height: 100vh; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
+    padding: 9vh max(20px, 7vw) 8vh; position: relative;
+    background: radial-gradient(900px 500px at 85% 10%, rgba(99,79,125,.28), transparent 60%),
+                radial-gradient(800px 500px at 0% 100%, rgba(71,161,173,.16), transparent 60%); }
+  section.alt { background: radial-gradient(900px 500px at 10% 0%, rgba(242,97,122,.12), transparent 60%),
+                radial-gradient(800px 500px at 100% 100%, rgba(71,161,173,.16), transparent 60%); }
+
+  /* chrome */
+  .brand { position: fixed; top: 16px; left: 20px; z-index: 10; display: flex; align-items: center; gap: 10px;
+    font-family: var(--pixel); font-size: 10px; color: var(--sapphire); letter-spacing: .04em; }
+  .brand img { width: 34px; height: 34px; object-fit: contain; }
+  .brand .tw { width: auto; height: 20px; }
+  .brand .sep { opacity: .45; }
+  .counter { position: fixed; top: 22px; right: 24px; z-index: 10; font-family: var(--mono); font-size: 13px; color: var(--text-dim); }
+  .progress { position: fixed; left: 0; top: 0; height: 4px; z-index: 11; width: 0;
+    background: linear-gradient(90deg, var(--sapphire), var(--jade), var(--turmeric), var(--flamingo)); transition: width .3s; }
+
+  /* type */
+  .kicker { display: inline-flex; align-items: center; gap: 10px; align-self: flex-start; margin-bottom: 20px;
+    font-family: var(--mono); font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 6px; border: 1px solid var(--sapphire); color: var(--sapphire); }
+  .kicker.demo { border-color: var(--turmeric); color: var(--turmeric); background: rgba(204,133,11,.1); }
+  .kicker.demo::before { content: "▶"; }
+  h1 { font-family: var(--pixel); font-size: clamp(28px, 5vw, 60px); line-height: 1.25; margin: 0 0 20px; color: #fff; }
+  h2 { font-size: clamp(30px, 4.6vw, 58px); line-height: 1.05; margin: 0 0 30px; font-weight: 800; letter-spacing: -.02em; color: #fff; }
+  h2 em { font-style: normal; color: var(--sapphire); }
+  .lead { font-size: clamp(18px, 2.3vw, 28px); color: var(--text-dim); margin: 0 0 28px; max-width: 40ch; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; max-width: 900px; }
+  li { font-size: clamp(18px, 2.3vw, 30px); line-height: 1.3; padding-left: 30px; position: relative; }
+  li::before { content: ""; position: absolute; left: 0; top: .5em; width: 12px; height: 12px; background: var(--sapphire);
+    box-shadow: 3px 3px 0 var(--wave); }
+  li b { color: #fff; }
+  code, .cmd { font-family: var(--mono); font-size: .82em; color: var(--jade); background: rgba(107,158,120,.12);
+    padding: 2px 9px; border-radius: 5px; white-space: nowrap; }
+
+  /* reveal */
+  .r { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+  section.in .r { opacity: 1; transform: none; }
+  section.in .r:nth-child(2) { transition-delay: .08s } section.in .r:nth-child(3) { transition-delay: .16s }
+  section.in .r:nth-child(4) { transition-delay: .24s } section.in .r:nth-child(5) { transition-delay: .32s }
+  section.in .r:nth-child(6) { transition-delay: .4s }  section.in .r:nth-child(7) { transition-delay: .48s }
+
+  /* components */
+  .grid { display: grid; gap: 16px; max-width: 1150px; }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+  .card { background: rgba(255,255,255,.05); border: 1px solid rgba(159,186,196,.22); border-radius: 14px; padding: 20px 22px;
+    border-top: 4px solid var(--c, var(--sapphire)); }
+  .card h3 { margin: 0 0 8px; font-size: clamp(18px, 1.9vw, 24px); color: #fff; }
+  .card p { margin: 0; color: var(--text-dim); font-size: clamp(14px, 1.4vw, 18px); line-height: 1.4; }
+  .card .big { font-family: var(--pixel); font-size: clamp(22px, 3vw, 38px); color: var(--c, var(--sapphire)); margin-bottom: 10px; display: block; }
+  .card ul { gap: 9px; margin-top: 12px; }
+  .card li { font-size: clamp(13px, 1.35vw, 17px); line-height: 1.35; padding-left: 20px; color: var(--text-dim); }
+  .card li::before { width: 7px; height: 7px; top: .45em; background: var(--c, var(--sapphire)); box-shadow: 2px 2px 0 var(--wave); }
+  .s { --c: var(--sapphire) } .j { --c: var(--jade) } .a { --c: var(--amethyst) } .t { --c: var(--turmeric) } .f { --c: var(--flamingo) }
+  .flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; max-width: 1150px; }
+  .flow .step { background: rgba(255,255,255,.06); border: 1px solid rgba(159,186,196,.25); border-radius: 10px;
+    padding: 12px 18px; font-size: clamp(15px, 1.7vw, 22px); display: flex; align-items: center; gap: 8px; }
+  .flow .arrow { color: var(--sapphire); font-family: var(--pixel); align-self: center; }
+  .term { background: #011820; border: 1px solid rgba(71,161,173,.4); border-radius: 12px; max-width: 980px; overflow: hidden;
+    box-shadow: 0 0 0 4px rgba(71,161,173,.08), 0 20px 50px rgba(0,0,0,.4); }
+  .term .bar { display: flex; gap: 7px; padding: 10px 14px; background: rgba(255,255,255,.05); }
+  .term .bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--flamingo); }
+  .term .bar i:nth-child(2) { background: var(--turmeric) } .term .bar i:nth-child(3) { background: var(--jade) }
+  .term pre { margin: 0; padding: 18px 22px; font-family: var(--mono); font-size: clamp(13px, 1.55vw, 20px); line-height: 1.7; color: var(--mist); overflow-x: auto; }
+  .term .p { color: var(--sapphire) } .term .c { color: var(--text-dim) } .term .ok { color: var(--jade) } .term .warn { color: var(--turmeric) } .term .bad { color: var(--flamingo) }
+  .cur { display: inline-block; width: .6em; height: 1.05em; background: var(--turmeric); vertical-align: -.15em; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0 } }
+  .pill { display: inline-block; font-family: var(--mono); font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; color: #fff; background: var(--c, var(--sapphire)); }
+  .row { display: flex; gap: 40px; align-items: center; flex-wrap: wrap; }
+  .row > * { flex: 1 1 320px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr } }
+  .compare h3 { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 10px; }
+  .bird { width: clamp(220px, 30vw, 420px); filter: drop-shadow(0 20px 40px rgba(0,0,0,.5)); animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-10px) } }
+  .bars { display: grid; gap: 8px; max-width: 1000px; font-family: var(--mono); font-size: clamp(13px, 1.5vw, 18px); }
+  .bars div { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 12px; align-items: center; }
+  .bars span.b { height: 12px; background: var(--w, 60%); background: linear-gradient(90deg, var(--c) var(--w), rgba(255,255,255,.08) var(--w)); border-radius: 3px; }
+
+  /* maintenance animation: plays when the slide enters (section.in); final state in print / reduced motion.
+     Timeline in seconds via --t (start) and --d (how long the step stays active). Total ~52s. */
+  .vid { position: relative; display: grid; grid-template-columns: minmax(180px, 30%) 1fr; gap: 18px; max-width: 1150px; margin-bottom: 16px; }
+  .vid .replay { position: absolute; top: -30px; right: 0; background: none; border: 1px solid rgba(159,186,196,.3); color: var(--text-dim);
+    font: 12px var(--mono); padding: 2px 10px; border-radius: 999px; cursor: pointer; }
+  .vid .replay:hover { color: #fff; border-color: var(--sapphire); }
+  .vid.off *, .vid.off *::before { animation: none !important; }
+  .path { display: grid; gap: 2px; align-content: start; font-family: var(--mono); font-size: clamp(11px, 1.2vw, 15px); }
+  .path div { display: flex; align-items: center; gap: 10px; padding: 3px 10px; border: 1px solid transparent; border-radius: 6px; color: var(--text-dim); }
+  .path div::before { content: ""; flex: none; width: 9px; height: 9px; background: rgba(159,186,196,.3); }
+  section.in .vid .path div { animation: stepOn var(--d) var(--t) both; }
+  section.in .vid .path div::before { animation: markOn var(--d) var(--t) both; }
+  @keyframes stepOn { 0% { color: var(--text-dim); background: transparent; border-color: transparent }
+    5%, 94% { color: #fff; background: rgba(204,133,11,.16); border-color: var(--turmeric) }
+    100% { color: var(--mist); background: transparent; border-color: transparent } }
+  @keyframes markOn { 0% { background: rgba(159,186,196,.3); box-shadow: none }
+    5%, 94% { background: var(--turmeric); box-shadow: 0 0 10px var(--turmeric) }
+    100% { background: var(--end, var(--sapphire)); box-shadow: none } }
+  .screen { display: grid; }
+  .screen > .term { grid-area: 1 / 1; max-width: none; font-family: var(--mono); font-size: clamp(11px, 1.2vw, 15px); line-height: 1.55; }
+  .screen .bar { align-items: center; }
+  .screen .ttl { margin-left: 10px; color: var(--text-dim); font-size: .85em; }
+  .screen .body { padding: 12px 18px 14px; display: grid; gap: 3px; align-content: start; }
+  .vid .ev { display: grid; grid-template-columns: 6.6em 1fr; gap: 10px; opacity: 0; }
+  .vid .ev b { font-weight: 700; color: var(--sapphire); }
+  .vid .ev b.bad { color: var(--flamingo) } .vid .ev b.ok { color: var(--jade) } .vid .ev b.warn { color: var(--turmeric) }
+  .vid .ev code { font-size: .95em; padding: 0 6px; }
+  section.in .vid .ev { animation: evIn .4s var(--t) both; }
+  @keyframes evIn { from { opacity: 0; transform: translateX(-8px) } to { opacity: 1; transform: none } }
+  .vid .result { opacity: 0; }
+  section.in .vid .feed { animation: fadeOut .5s 33s both; }
+  section.in .vid .result { animation: fadeIn .5s 33.5s both; }
+  @keyframes fadeOut { to { opacity: 0 } } @keyframes fadeIn { to { opacity: 1 } }
+  .vid .btn { display: inline-block; padding: 0 12px; margin-right: 10px; border: 1px solid var(--turmeric); border-radius: 6px; color: var(--turmeric); font-weight: 700; }
+  section.in .vid .btn { animation: pressed .3s 44s both; }
+  @keyframes pressed { to { background: var(--jade); border-color: var(--jade); color: #fff } }
+  .guards { margin-top: 4px; gap: 8px; }
+  .guards .step { font-size: clamp(12px, 1.35vw, 17px); padding: 7px 14px; border-color: rgba(107,158,120,.5); }
+  @media (max-width: 760px) { .vid { grid-template-columns: 1fr } }
+  @media print, (prefers-reduced-motion: reduce) {
+    .vid *, .vid *::before { animation: none !important; }
+    .vid .ev, .vid .result { opacity: 1; } .vid .feed { opacity: 0; }
+    .vid .path div::before { background: var(--end, var(--sapphire)); } .vid .btn { background: var(--jade); border-color: var(--jade); color: #fff; }
+    .vid .replay { display: none; } }
+  @media print { .vid { grid-template-columns: minmax(180px, 30%) 1fr !important; } }
+
+  /* presenter chip + team + qr */
+  .presenter { position: fixed; bottom: 14px; left: 20px; z-index: 10; display: flex; align-items: center; gap: 10px;
+    background: rgba(2,42,55,.85); border: 1px solid rgba(71,161,173,.35); border-radius: 999px; padding: 5px 16px 5px 5px;
+    font-family: var(--mono); font-size: 13px; color: var(--mist); backdrop-filter: blur(6px); }
+  .presenter img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: center 20%; border: 2px solid var(--sapphire); }
+  .presenter img + img { margin-left: -18px; }
+  .team { max-width: 1000px; }
+  .person { text-align: center; }
+  .person img { width: clamp(120px, 15vw, 200px); height: clamp(120px, 15vw, 200px); border-radius: 50%; object-fit: cover; object-position: center 20%;
+    border: 4px solid var(--sapphire); box-shadow: 0 0 0 6px rgba(71,161,173,.15); margin-bottom: 14px; }
+  .person h3 { margin: 0 0 4px; font-size: clamp(18px, 2vw, 26px); color: #fff; }
+  .person p { margin: 0; color: var(--text-dim); font-size: clamp(14px, 1.5vw, 19px); }
+  .person .area { color: var(--turmeric); font-family: var(--mono); font-size: clamp(12px, 1.3vw, 16px); margin-top: 6px; }
+  sup { font-size: .5em; vertical-align: super; }
+  .who { float: right; width: 30px; height: 30px; border-radius: 50%; background-size: cover; background-position: center 20%; border: 2px solid var(--c); }
+  .who.v { background-image: url(assets/vitoria.jpg) } .who.a { background-image: url(assets/amy.jpg) } .who.m { background-image: url(assets/majo.jpg) }
+  .qrbox { text-align: center; font-family: var(--mono); font-size: 14px; color: var(--text-dim); flex: 0 0 auto; }
+  .qr { background: #fff; padding: 12px; border-radius: 12px; width: 204px; height: 204px; margin: 0 auto 10px; display: grid; place-items: center; }
+  .qr img { width: 100%; height: 100%; display: block; }
+  .qr:empty::after { content: "add link"; color: #999; font-size: 13px; }
+  .minis { display: grid; gap: 14px; text-align: left; }
+  .minis div { display: grid; grid-template-columns: 56px 1fr; column-gap: 14px; align-items: center; }
+  .minis img { grid-row: span 2; width: 56px; height: 56px; border-radius: 50%; object-fit: cover; object-position: center 20%; border: 2px solid var(--sapphire); }
+  .minis b { color: #fff; font-size: clamp(16px, 1.8vw, 22px); } .minis small { color: var(--text-dim); font-size: clamp(12px, 1.3vw, 16px); }
+  .cols3 { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .col { display: grid; gap: 12px; align-content: start; }
+  .colhead { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: clamp(15px, 1.7vw, 22px); color: #fff; padding-bottom: 4px; }
+  .colhead img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; object-position: center 20%; border: 2px solid var(--sapphire); }
+  @media (max-width: 760px) { .cols3 { grid-template-columns: 1fr; } }
+  .res { display: block; color: inherit; text-decoration: none; }
+  .res:hover { border-color: var(--sapphire); }
+  .res img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; margin-bottom: 14px; }
+  .res .url { margin-top: 8px; font-family: var(--mono); font-size: clamp(12px, 1.3vw, 16px); color: var(--sapphire); }
+  .hint { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: var(--text-dim); font-family: var(--mono); font-size: 12px; opacity: .6; pointer-events: none; z-index: 10; }
+  .cover { align-items: center; text-align: center; }
+  .cover .lead { margin-left: auto; margin-right: auto; }
+  @page { size: 1280px 720px; margin: 0; }
+  @media print { * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } html, body { background: var(--wave-deep); height: auto; }
+    .deck { height: auto; overflow: visible; } section { height: 720px; min-height: 0; padding: 70px 80px 50px; break-after: page; break-inside: avoid; overflow: hidden; }
+    .cols3 { grid-template-columns: repeat(3, 1fr) !important; } .split { grid-template-columns: 1fr 1fr !important; }
+    .hint, .brand, .counter, .progress, .presenter, body::before { display: none; } .r { opacity: 1 !important; transform: none !important; } .bird { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .r { transition: none; } .bird, .cur { animation: none; } }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="brand"><img src="assets/logo.png" alt="Sensible Harness"> SENSIBLE HARNESS <span class="sep">|</span> <img class="tw" src="assets/tw-logo.png" alt="Thoughtworks"></div>
+<div class="presenter" id="presenter"></div>
+<div class="counter" id="counter">1 / 20</div>
+
+<div class="deck" id="deck">
+<section data-p="m" class="cover">
+  <img class="bird r" src="assets/logo.png" alt="Sensible Harness mascot" style="width:clamp(120px,16vw,210px)">
+  <h1 class="r" style="font-size:clamp(24px,4.2vw,50px);margin-bottom:16px">Sensible Harness</h1>
+  <p class="lead r" style="font-size:clamp(11px,2.1vw,27px);color:var(--mist);max-width:none;white-space:nowrap;margin-bottom:30px">AI-first delivery and maintenance in a single command</p>
+  <p class="lead r" style="font-family:var(--mono);font-size:clamp(14px,1.6vw,19px);letter-spacing:.04em;margin-bottom:4px">HSBC Engineering Week</p>
+  <p class="lead r" style="font-family:var(--mono);font-size:clamp(14px,1.6vw,19px);letter-spacing:.04em;margin-bottom:22px">October 2026 London</p>
+  <img class="r" src="assets/tw-logo.png" alt="Thoughtworks" style="height:clamp(20px,2.3vw,30px);width:auto">
+</section>
+
+<section data-p="v a m">
+  <span class="kicker r">The team</span>
+  <h2 class="r">Who <em>we are</em></h2>
+  <div class="grid g3 team">
+    <div class="person r"><img src="assets/amy.jpg" alt="Amy Pellegrini"><h3>Amy Pellegrini</h3><p>Lead Developer</p><p class="area">AI-First Software Delivery</p></div>
+    <div class="person r"><img src="assets/majo.jpg" alt="Maria Jose Lalama"><h3>Maria Jose Lalama</h3><p>Senior AI Product Researcher</p><p class="area">AI/Works<sup>™</sup></p></div>
+    <div class="person r"><img src="assets/vitoria.jpg" alt="Vitória Toebe"><h3>Vitória Toebe</h3><p>Lead Developer</p><p class="area">AI-First Software Maintenance</p></div>
+  </div>
+</section>
+
+<section data-p="a" class="alt">
+  <span class="kicker r">The problem</span>
+  <h2 class="r">Everyone uses AI. <em>Nobody uses it the same way.</em></h2>
+  <p class="lead r" style="max-width:none">Access to AI isn't 10× productivity. Generation scales; human review doesn't.</p>
+  <div class="grid g3">
+    <div class="card f r"><span class="big">01</span><h3>Ad hoc usage</h3><p>Every team rebuilds its own harness. Learned on the run, absent from capacity planning.</p></div>
+    <div class="card a r"><span class="big">02</span><h3>The evaluation gap</h3><p>Cognitive debt: AI produces faster than humans can review. We need to build trust to not need to review every line.</p></div>
+    <div class="card t r"><span class="big">03</span><h3>No guardrails, no visibility</h3><p>No shared conventions, no audit trail, no view of how ready a repo is for agents. Adoption turns fragmented, risky, hard to scale.</p></div>
+  </div>
+</section>
+
+<section data-p="m">
+  <span class="kicker r">The tool</span>
+  <h2 class="r">Turn any repo into a <em>governed AI-first environment</em></h2>
+  <div class="flow r" style="margin-bottom:28px">
+    <span class="step">any git repo</span><span class="arrow">▸</span>
+    <span class="step" style="border-color:var(--turmeric);background:rgba(204,133,11,.14)"><code>sensible-harness</code></span><span class="arrow">▸</span>
+    <span class="step">agent-ready repo</span>
+  </div>
+  <div class="grid g3">
+    <div class="card s r"><h3>Modular CLI</h3><p>One command bootstraps any git repo</p></div>
+    <div class="card a r"><h3>Guardrails, not suggestions</h3><p>Agents and engineers run on the same track</p></div>
+    <div class="card j r"><h3>Battle-tested engineering practices</h3><p>As a behavioural agentic harness</p></div>
+  </div>
+  <p class="lead r" style="margin:28px 0 0;max-width:none"><b style="color:#fff">Scale AI adoption</b> without scaling the chaos.</p>
+</section>
+
+<section data-p="a">
+  <span class="kicker r">The foundations</span>
+  <h2 class="r">Thoughtworks <em>Sensible Defaults</em></h2>
+  <p class="lead r">Practices we already trust. The agent follows them; it doesn't replace them.</p>
+  <div class="grid g3" style="grid-template-columns:repeat(3,1fr)">
+    <div class="card s r"><h3>Iterative development</h3><p>Small slices, shipped and reviewed. Course corrections happen early, not at the end</p></div>
+    <div class="card t r"><h3>TDD</h3><p>Test-driven development: red, green, refactor</p></div>
+    <div class="card j r"><h3>Test pyramid</h3><p>Many unit tests, fewer integration, fewest end-to-end. Suites stay fast and trustworthy</p></div>
+    <div class="card t r"><h3>Small commits</h3><p>Atomic and conventional. Each one explains itself and reverts cleanly</p></div>
+    <div class="card a r"><h3>Human on the loop</h3><p>A human decides how much to delegate and when to validate</p></div>
+    <div class="card s r"><h3>CI/CD</h3><p>Catches defects before they reach production</p></div>
+  </div>
+</section>
+
+<section data-p="v a" class="alt">
+  <span class="kicker demo r">Demo 01 Baseline · 02 Init</span>
+  <h2 class="r">Sensible Harness: <em>AI-first delivery</em></h2>
+  <div class="flow r" style="margin-bottom:26px">
+    <span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span>
+    <span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span>
+    <span class="step"><b>Agents</b> BA · Dev · QA</span>
+  </div>
+  <div class="split r compare">
+    <div class="term"><div class="bar"><i></i><i></i><i></i></div><pre><span class="c"># before: untouched main</span>
+<span class="p">$</span> claude
+<span class="warn">agent works with no rules in place</span><span class="cur"></span></pre></div>
+    <div class="term"><div class="bar"><i></i><i></i><i></i></div><pre><span class="c"># after</span>
+<span class="p">$</span> sensible-harness init
+<span class="p">$</span> sensible-harness doctor
+<span class="ok">✓ harness installed</span></pre></div>
+  </div>
+</section>
+
+<section data-p="v a">
+  <span class="kicker r">Tool onboarding</span>
+  <h2 class="r">Pick your <em>role</em></h2>
+  <div class="grid g3">
+    <div class="card j r"><span class="big">DEV</span><h3><code>/onboard-dev</code></h3><p>Dev agent and the delivery skills: pickup, tdd, commit, PR, CI, close</p></div>
+    <div class="card a r"><span class="big">QA</span><h3><code>/onboard-qa</code></h3><p>QA agent and assessments: pyramid, CI, pre-commit, qa-test</p></div>
+    <div class="card t r"><span class="big">BA</span><h3><code>/onboard-ba</code></h3><p>BA agent and how issues flow into delivery</p></div>
+  </div>
+  <p class="lead r" style="margin-top:26px">Each ends with: run <code>/assess-repo</code></p>
+</section>
+
+<section data-p="v a" class="alt">
+  <span class="kicker demo r">Demo 03 Assess</span>
+  <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">Before going AI-first, <em>know your repo</em></h2>
+  <p class="lead r" style="max-width:none;font-size:clamp(16px,1.8vw,22px);margin-bottom:6px"><code>/assess-repo</code> scores it across 10 dimensions, so you know how much you can trust agents on it</p>
+  <p class="r" style="margin:0 0 20px;color:var(--text-dim);font-family:var(--mono);font-size:clamp(12px,1.3vw,16px)">Your standards first. Thoughtworks defaults only where you have none.</p>
+  <div class="row r" style="gap:28px">
+  <div class="bars" style="flex:1 1 600px;font-size:clamp(12px,1.35vw,16px)">
+    <div><span>Architecture</span><span class="b" style="--c:var(--jade);--w:85%"></span></div>
+    <div><span>Dependency Health</span><span class="b" style="--c:var(--jade);--w:78%"></span></div>
+    <div><span>Code Quality Infrastructure</span><span class="b" style="--c:var(--sapphire);--w:72%"></span></div>
+    <div><span>Documentation</span><span class="b" style="--c:var(--sapphire);--w:64%"></span></div>
+    <div><span>CI/CD &amp; Delivery Conventions</span><span class="b" style="--c:var(--turmeric);--w:58%"></span></div>
+    <div><span>Test Quality</span><span class="b" style="--c:var(--turmeric);--w:55%"></span></div>
+    <div><span>Developer Experience</span><span class="b" style="--c:var(--turmeric);--w:52%"></span></div>
+    <div><span>Observability</span><span class="b" style="--c:var(--flamingo);--w:35%"></span></div>
+    <div><span>AI Governance</span><span class="b" style="--c:var(--flamingo);--w:30%"></span></div>
+    <div><span>Security Baseline</span><span class="b" style="--c:var(--flamingo);--w:20%"></span></div>
+  </div>
+  <div style="flex:0 1 300px;display:grid;gap:14px">
+    <div class="card s"><h3>Dashboard</h3><p>Score, band and blockers on one page</p></div>
+    <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
+  </div>
+  </div>
+  <p class="lead r" style="margin:22px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">Gaps become tickets, the team delivers them, and the next assessment shows <b style="color:#fff">how things have changed</b> since this one</p>
+</section>
+
+<section data-p="v a">
+  <span class="kicker demo r">Demo 03 Onboard</span>
+  <h2 class="r" style="font-size:clamp(28px,4vw,50px)">The assessment writes the <em>onboarding</em></h2>
+  <p class="lead r" style="max-width:none">Generated from this repo’s own analysis. Not a template.</p>
+  <div class="grid g2">
+    <div class="card t r"><h3><code>/onboard-me</code></h3><p>Understand the repo</p>
+      <ul><li>Architecture and where things live</li><li>How to test and ship a change</li><li>Known traps the assessment found</li><li>What agents must not do alone</li></ul></div>
+    <div class="card j r"><h3><code>/setup-workspace</code></h3><p>Get it running</p>
+      <ul><li>Prerequisites, checked in order</li><li>Install, database, each service</li><li>Verify the whole environment</li><li>Asks before changing your machine</li></ul></div>
+  </div>
+  <p class="lead r" style="margin:26px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">A faster start for every new teammate, with the same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits</p>
+</section>
+
+<section data-p="v a">
+  <span class="kicker r">Building blocks</span>
+  <h2 class="r">We started small, then <em>kept building</em></h2>
+  <div class="flow r" style="margin-bottom:26px">
+    <span class="step">Skill</span><span class="arrow">▸</span><span class="step">Workflow</span><span class="arrow">▸</span><span class="step">Agent</span>
+  </div>
+  <div class="grid g3">
+    <div class="card s r"><span class="big">01</span><h3>Skills</h3><p>Routine tasks, one job each: branch, checkout, commit, open PR</p></div>
+    <div class="card j r"><span class="big">02</span><h3>Workflows</h3><p>The same sequence, chained: pickup → plan → TDD → PR → close</p></div>
+    <div class="card t r"><span class="big">03</span><h3>Agents</h3><p>Run the workflows and stop at human gates: <code>/dev</code> <code>/qa</code> <code>/business-analyst</code></p></div>
+  </div>
+  <p class="lead r" style="margin:26px 0 0;max-width:none">Each step stayed useful on its own. Start with the task your team repeats.</p>
+</section>
+
+<section data-p="m" class="alt">
+  <span class="kicker demo r">Demo 04 BA backlog</span>
+  <h2 class="r">BA agent: <em>need → story</em></h2>
+  <div class="flow r" style="margin-bottom:26px">
+    <span class="step">Assessment gap</span><span class="step">Feature request</span><span class="arrow">▸</span>
+    <span class="step"><code>/business-analyst</code></span><span class="arrow">▸</span><span class="step">Jira ticket</span>
+  </div>
+  <ul>
+    <li class="r">Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
+    <li class="r">Stops to ask when scope is unclear</li>
+    <li class="r">Reorders the backlog</li>
+  </ul>
+</section>
+
+<section data-p="a">
+  <span class="kicker demo r">Demo 05 Dev plan</span>
+  <h2 class="r">Dev agent: <em>plan first</em></h2>
+  <div class="flow r" style="margin-bottom:26px">
+    <span class="step"><code>/dev GV-n</code></span><span class="arrow">▸</span>
+    <span class="step">Ticket check</span><span class="arrow">▸</span>
+    <span class="step">Branch</span><span class="arrow">▸</span>
+    <span class="step">Plan</span><span class="arrow">▸</span>
+    <span class="step" style="border-color:var(--turmeric)">👤 Approve</span><span class="arrow">▸</span>
+    <span class="step">Saved to ticket</span>
+  </div>
+  <ul>
+    <li class="r">One plan step per acceptance criterion</li>
+    <li class="r">One round of changes before approval</li>
+  </ul>
+</section>
+
+<section data-p="a" class="alt">
+  <span class="kicker demo r">Demo 06 Dev implement</span>
+  <h2 class="r">Dev agent: <em>execute</em></h2>
+  <div class="term r"><div class="bar"><i></i><i></i><i></i></div><pre><span class="c"># branch: feature/GV-94-hackathon-dinner-rsvp</span>
+<span class="p">&gt;</span> /tdd  <span class="c"># AC 1</span>  <span class="ok">→ commit</span>
+<span class="p">&gt;</span> /tdd  <span class="c"># AC 2</span>  <span class="ok">→ commit</span>
+<span class="p">&gt;</span> /tdd  <span class="c"># AC 3</span>  <span class="ok">→ commit</span>
+<span class="p">&gt;</span> /open-pr   <span class="c"># + token-cost report</span>
+<span class="p">&gt;</span> /check-ci<span class="cur"></span></pre></div>
+</section>
+
+<section data-p="a">
+  <span class="kicker demo r">Demo 07 QA test</span>
+  <h2 class="r">QA agent: <em>verify</em></h2>
+  <div class="grid g3">
+    <div class="card s r"><h3>Test plan</h3><p>Built from the acceptance criteria</p></div>
+    <div class="card j r"><h3>Verdict per AC</h3><p><span class="pill" style="--c:var(--jade)">PASS</span> <span class="pill" style="--c:var(--flamingo)">FAIL</span></p></div>
+    <div class="card a r"><h3>Recommendation</h3><p>Close, or address gaps</p></div>
+  </div>
+  <p class="lead r" style="margin-top:26px"><b style="color:#fff">QA never changes code.</b> It recommends.</p>
+</section>
+
+<section data-p="a" class="alt">
+  <span class="kicker demo r">Demo 08 Close loop</span>
+  <h2 class="r">Closing the <em>loop</em></h2>
+  <div class="flow r" style="margin-bottom:26px">
+    <span class="step"><code>/address-pr-comments</code></span><span class="arrow">▸</span>
+    <span class="step"><code>/check-ci</code></span><span class="arrow">▸</span>
+    <span class="step"><code>/close-issue</code></span>
+  </div>
+  <ul>
+    <li class="r"><code>/close-issue</code> checks every AC before merging</li>
+    <li class="r">Re-score a dimension: before / after</li>
+    <li class="r">QA's gap flows back to the BA</li>
+  </ul>
+</section>
+
+<section data-p="m">
+  <span class="kicker r">Cost</span>
+  <h2 class="r">Model choice &amp; <em>cost visibility</em></h2>
+  <p class="lead r" style="max-width:none">Tracks token consumption on every agent run.</p>
+  <div class="grid g3">
+    <div class="card s r"><span class="big">◧</span><h3>Model per skill</h3><p>Configured in the skill itself</p></div>
+    <div class="card t r"><span class="big">$</span><h3>Spend on the ticket</h3><p>Token report posted at task completion</p></div>
+    <div class="card j r"><span class="big">✓</span><h3>No surprises</h3><p>Per-model breakdown and cost estimate</p></div>
+  </div>
+  <ul class="r" style="margin-top:28px;max-width:1100px;font-size:clamp(15px,1.7vw,22px)">
+    <li style="font-size:inherit"><b>Enterprises</b> see where the AI investment actually goes</li>
+    <li style="font-size:inherit"><b>Teams</b> optimise their usage and tailor their own harness</li>
+    <li style="font-size:inherit"><b>PMs</b> measure agent cost alongside delivery velocity</li>
+  </ul>
+</section>
+
+<section data-p="v" class="alt">
+  <span class="kicker r">Maintenance</span>
+  <h2 class="r" style="margin-bottom:12px">AI-first software <em>maintenance</em></h2>
+  <p class="lead r" style="max-width:none;font-size:clamp(15px,1.6vw,20px);margin-bottom:34px">One connected view across your ecosystem finds the root cause faster, and with more certainty</p>
+  <div class="vid r" id="vid">
+    <button class="replay" id="replay" type="button">↻ replay (R)</button>
+    <div class="path">
+      <div style="--t:.5s;--d:4s">Alert</div>
+      <div style="--t:4.5s;--d:5s">Metrics</div>
+      <div style="--t:9.5s;--d:6.5s">Logs &amp; traces</div>
+      <div style="--t:16s;--d:4s">Service A code</div>
+      <div style="--t:20s;--d:5s">Service B code</div>
+      <div style="--t:25s;--d:4s">Database</div>
+      <div style="--t:29s;--d:4.5s">Team chat</div>
+      <div style="--t:33.5s;--d:8.5s">Root cause</div>
+      <div style="--t:42s;--d:3s;--end:var(--turmeric)">Human approves</div>
+      <div style="--t:45s;--d:2.5s;--end:var(--jade)">Ticket + handover</div>
+      <div style="--t:47.5s;--d:3.5s;--end:var(--jade)">Fix + PR</div>
+    </div>
+    <div class="screen">
+      <div class="term feed"><div class="bar"><i></i><i></i><i></i><span class="ttl">investigation · read-only</span></div>
+        <div class="body">
+          <div class="ev" style="--t:.8s"><b class="bad">ALERT</b><span>service-b error rate 0.4% → 9.1%</span></div>
+          <div class="ev" style="--t:5s"><b>METRICS</b><span>spike starts 14:02 · p95 latency ×3 · only service-b</span></div>
+          <div class="ev" style="--t:10s"><b>TRACES</b><span>one trace id joins service-a → service-b</span></div>
+          <div class="ev" style="--t:12.5s"><b>LOGS</b><span>“missing field: region” · 2,184 hits since 14:02</span></div>
+          <div class="ev" style="--t:16.5s"><b class="ok">CODE A</b><span>service-a reads <code>region</code> from service-b’s response</span></div>
+          <div class="ev" style="--t:20.5s"><b class="ok">CODE B</b><span>deploy at 14:00 removed <code>region</code> (change 3f2a)</span></div>
+          <div class="ev" style="--t:25.5s"><b>DATABASE</b><span>data intact · rules out corruption</span></div>
+          <div class="ev" style="--t:29.5s"><b>CHAT</b><span>“deployed service-b at 14:00” · same break seen 3 weeks ago</span></div>
+        </div></div>
+      <div class="term result"><div class="bar"><i></i><i></i><i></i><span class="ttl">root cause · proposed fix</span></div>
+        <div class="body">
+          <div class="ev" style="--t:34s"><b class="warn">ROOT CAUSE</b><span>Change <code>3f2a</code> removed <code>region</code> from service-b’s response. service-a still requires it.</span></div>
+          <div class="ev" style="--t:36s"><b class="ok">● verified</b><span>service-b diff at 14:00 · errors start 14:02</span></div>
+          <div class="ev" style="--t:37.5s"><b>◐ inferred</b><span>service-a fails only because of the missing field</span></div>
+          <div class="ev" style="--t:39s"><b class="bad">○ unknown</b><span>other consumers of service-b</span></div>
+          <div class="ev" style="--t:40.5s"><b class="warn">FIX</b><span>Restore <code>region</code>, add a contract test</span></div>
+          <div class="ev" style="--t:42s"><b class="warn">HUMAN</b><span><span class="btn">Approve</span>nothing is written until a person approves</span></div>
+          <div class="ev" style="--t:45s"><b class="ok">TICKET</b><span>TICKET-482 created · handed over to dev</span></div>
+          <div class="ev" style="--t:47.5s"><b class="ok">DEV AGENT</b><span>fix + contract test → PR #219</span></div>
+        </div></div>
+    </div>
+  </div>
+  <div class="flow guards r">
+    <span class="step">Read-only access</span><span class="step">Every claim labelled: verified · inferred · unknown</span><span class="step">A human approves every write</span>
+  </div>
+</section>
+
+<section data-p="v a m">
+  <span class="kicker r">Roadmap</span>
+  <h2 class="r">What’s <em>next?</em></h2>
+  <div class="grid g3">
+    <div class="card a r"><h3>AI-First Software Maintenance</h3><p>Operational agents with skills beyond delivery. They connect across your application ecosystem to see the full picture of operations, trace issues to their root cause and propose fixes.</p></div>
+    <div class="card t r"><h3>Socratic Prompting as default</h3><p>The agent asks the questions, not the human. It removes ambiguity up front and keeps people doing the thinking, so know-how stays in the team.</p></div>
+    <div class="card j r"><h3>Evals and Feedback</h3><p>Every agent has evals criteria that catch when a step drifts from what’s expected. A feedback skill lets users flag what’s working and what isn’t, so the harness keeps improving.</p></div>
+  </div>
+</section>
+
+<section class="alt" data-p="v">
+  <span class="kicker r">Conclusion</span>
+  <h2 class="r"><code style="color:var(--sapphire);background:rgba(71,161,173,.12)">sensible-harness init</code></h2>
+  <div class="grid g4">
+    <div class="card j r"><span class="big">01</span><h3>Increase velocity while keeping quality</h3>
+      <ul><li>Easy to adopt</li><li>Low risk to run</li><li>No compromise on code quality</li></ul></div>
+    <div class="card s r"><span class="big">02</span><h3>A tool that evolves with your needs</h3>
+      <ul><li>Battle-tested workflows</li><li>Built by Lead Devs and Product Managers</li><li>Adapt it to your project</li></ul></div>
+    <div class="card a r"><span class="big">03</span><h3>Onboard teammates faster</h3>
+      <ul><li>Aligned from day one</li><li>Same AI-First delivery standards</li><li>No harness built from scratch</li></ul></div>
+    <div class="card f r"><span class="big">04</span><h3>A harness that is yours</h3>
+      <ul><li>Assistants are a commodity</li><li>Your standards, context and workflows live in your repos</li><li>Versioned, inspectable, evolving with you</li></ul></div>
+  </div>
+</section>
+
+<section class="cover alt" data-p="v a m">
+  <h1 class="r">Q&amp;A</h1>
+  <div class="grid g3 team" style="margin:0 auto;max-width:1020px">
+    <div class="person r">
+      <img src="assets/amy.jpg" alt="Amy Pellegrini" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <h3>Amy Pellegrini</h3>
+      <p>Lead Developer</p>
+      <p class="area">AI-First Software Delivery</p>
+      <img src="assets/qrcode_amy.png" alt="QR code for Amy Pellegrini" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+    </div>
+    <div class="person r">
+      <img src="assets/majo.jpg" alt="Maria Jose Lalama" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <h3>Maria Jose Lalama</h3>
+      <p>Senior AI Product Researcher</p>
+      <p class="area">AI/Works<sup>™</sup></p>
+      <img src="assets/qrcode_maria.png" alt="QR code for Maria Jose Lalama" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+    </div>
+    <div class="person r">
+      <img src="assets/vitoria.jpg" alt="Vitória Toebe" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <h3>Vitória Toebe</h3>
+      <p>Lead Developer</p>
+      <p class="area">AI-First Software Maintenance</p>
+      <img src="assets/qrcode_vitoria.png" alt="QR code for Vitória Toebe" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+    </div>
+  </div>
+</section>
+
+<section data-p="v a m">
+  <span class="kicker r">Resources</span>
+  <h2 class="r">Our <em>XConf Europe 2026</em> talks</h2>
+  <div class="split">
+    <a class="card s res r" href="https://youtu.be/HuS4O5KhtWQ" target="_blank" rel="noopener">
+      <img src="assets/xconf-maintenance-delivery.jpg" alt="Talk thumbnail: AI-first software maintenance and AI-first software delivery, Vitória Toebe and Amy Pellegrini">
+      <h3>AI-First Software Maintenance &amp; AI-First Software Delivery</h3>
+      <p class="url">youtu.be/HuS4O5KhtWQ</p>
+    </a>
+    <a class="card f res r" href="https://youtu.be/4EPDghNJcqQ" target="_blank" rel="noopener">
+      <img src="assets/xconf-clarity-first.jpg" alt="Talk thumbnail: The clarity-first method, María José Lalama">
+      <h3>Clarity-First Method: Vibe-coding products without tech debt</h3>
+      <p class="url">youtu.be/4EPDghNJcqQ</p>
+    </a>
+  </div>
+</section>
+</div>
+<div class="hint">← → / space · F fullscreen</div>
+<script>
+  const deck = document.getElementById('deck');
+  const slides = [...deck.querySelectorAll('section')];
+  const counter = document.getElementById('counter'), progress = document.getElementById('progress');
+  const current = () => {
+    const y = deck.scrollTop + innerHeight / 2;
+    return Math.max(0, slides.findIndex(s => s.offsetTop <= y && s.offsetTop + s.offsetHeight > y));
+  };
+  const go = i => slides[Math.min(slides.length - 1, Math.max(0, i))].scrollIntoView();
+  const update = () => { const i = current(); showPresenter(i); counter.textContent = `${i + 1} / ${slides.length}`;
+    progress.style.width = `${((i + 1) / slides.length) * 100}%`; };
+
+  const PEOPLE = { v: ["Vitória", "assets/vitoria.jpg"], a: ["Amy", "assets/amy.jpg"], m: ["Majo", "assets/majo.jpg"] };
+  const chip = document.getElementById('presenter');
+  const showPresenter = i => { const ks = (slides[i].dataset.p || '').split(' ').filter(Boolean);
+    chip.hidden = !ks.length;
+    chip.innerHTML = ks.map(k => `<img src="${PEOPLE[k][1]}" alt="">`).join('') + ks.map(k => PEOPLE[k][0]).join(' · '); };
+  deck.addEventListener('scroll', update, { passive: true }); update();
+  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('in', e.isIntersecting)),
+    { root: deck, threshold: .35 });
+  slides.forEach(s => io.observe(s));
+  const vid = document.getElementById('vid');
+  const replay = () => { vid.classList.add('off'); void vid.offsetWidth; vid.classList.remove('off'); };
+  document.getElementById('replay').addEventListener('click', replay);
+  addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(current() + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(current() - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(slides.length - 1);
+    if (e.key === 'r' && slides[current()].contains(vid)) replay();
+    if (e.key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+</script>
+</body>
+</html>
