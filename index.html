@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sensible Harness Deep Dive</title>
+<title>Gates the agents can't skip</title>
+<meta name="description" content="Sensible Harness: a CLI harness that turns an existing repo into a governed environment for AI delivery with Claude Code. Claude Community, Barcelona.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -201,244 +202,438 @@
     .cols3 { grid-template-columns: repeat(3, 1fr) !important; } .split { grid-template-columns: 1fr 1fr !important; }
     .hint, .brand, .counter, .progress, .presenter, body::before { display: none; } .r { opacity: 1 !important; transform: none !important; } .bird { animation: none; } }
   @media (prefers-reduced-motion: reduce) { .r { transition: none; } .bird, .cur { animation: none; } }
+  /* ---- Claude Community additions ---- */
+  .kicker.sec-g { border-color: var(--jade); color: var(--jade); }
+  .kicker.sec-o { border-color: var(--amethyst); color: #a993c7; }
+  .kicker.sec-s { border-color: var(--flamingo); color: var(--flamingo); }
+  .kicker.sec-t { border-color: var(--turmeric); color: var(--turmeric); }
+  .sub { color: var(--text-dim); font-size: clamp(14px, 1.5vw, 19px); margin: -14px 0 22px; max-width: 70ch; }
+  .sub b { color: #fff; }
+  .video { width: 100%; max-width: 1080px; aspect-ratio: 16 / 9; max-width: min(1080px, calc((100vh - 340px) * 16 / 9)); border-radius: 14px; border: 1px solid rgba(71,161,173,.4);
+    background: #011820; box-shadow: 0 0 0 4px rgba(71,161,173,.08), 0 20px 50px rgba(0,0,0,.4); display: block; }
+  .shot { width: 100%; border-radius: 12px; border: 1px solid rgba(159,186,196,.3); display: block; box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+  .shot-cap { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+  .term.sm pre { font-size: clamp(11px, 1.2vw, 15px); line-height: 1.6; padding: 14px 18px; }
+  .term .m { color: #a993c7 } .term .y { color: var(--turmeric) }
+  .tbl { width: 100%; max-width: 1150px; border-collapse: collapse; font-size: clamp(12px, 1.3vw, 16px); }
+  .tbl th { text-align: left; font-family: var(--mono); font-size: .78em; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim);
+    font-weight: 700; padding: 6px 10px; border-bottom: 1px solid rgba(159,186,196,.35); }
+  .tbl td { padding: 7px 10px; border-bottom: 1px solid rgba(159,186,196,.14); color: var(--mist); vertical-align: top; }
+  .tbl td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+  .tbl td.n { font-family: var(--mono); color: var(--text-dim); white-space: nowrap; }
+  .tbl code { white-space: nowrap; }
+  .tag { display: inline-block; font-family: var(--mono); font-size: .8em; font-weight: 700; padding: 1px 8px; border-radius: 999px; white-space: nowrap;
+    border: 1px solid var(--c); color: var(--c); }
+  .tag.i { --c: var(--turmeric) } .tag.st { --c: var(--jade) } .tag.ex { --c: var(--sapphire) } .tag.h { --c: #a993c7 }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: clamp(12px, 1.25vw, 15px); color: var(--text-dim); }
+  /* sequence diagram */
+  .seq { display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 7px; column-gap: 0; font-size: clamp(11px, 1.15vw, 14px); }
+  .seq .actor { text-align: center; font-family: var(--mono); font-weight: 700; color: #fff; padding: 6px 4px; border-radius: 8px; margin: 0 6px 4px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(159,186,196,.3); }
+  .seq .actor.h { border-color: var(--turmeric); color: var(--turmeric); }
+  .seq .msg { grid-column: var(--a) / var(--b); position: relative; text-align: center; padding: 0 10px 5px; margin: 0 var(--m, 25%);
+    border-bottom: 2px solid var(--sapphire); color: var(--mist); }
+  .seq .msg::after { content: ""; position: absolute; bottom: -6px; right: -2px; border: 5px solid transparent; border-left: 8px solid var(--sapphire); }
+  .seq .msg.l::after { right: auto; left: -2px; border-left: 5px solid transparent; border-right: 8px solid var(--sapphire); }
+  .seq .msg.gate { border-color: var(--turmeric); } .seq .msg.gate::after { border-left-color: var(--turmeric); }
+  .seq .msg.l.gate::after { border-left-color: transparent; border-right-color: var(--turmeric); }
+  .seq .self { grid-column: var(--a); margin: 0 6px; padding: 5px 8px; border: 1px dashed rgba(159,186,196,.45); border-radius: 8px; color: var(--text-dim); text-align: center; }
+  .seq .self b { color: #fff; }
+  /* fan-out */
+  .fan { display: grid; justify-items: center; gap: 10px; max-width: 1150px; }
+  .fan .root { text-align: center; padding: 10px 22px; border-radius: 12px; border: 1px solid var(--turmeric); background: rgba(204,133,11,.1); }
+  .fan .root b { color: #fff; font-size: clamp(15px, 1.7vw, 21px); } .fan .root small { display: block; color: var(--text-dim); font-family: var(--mono); font-size: 12px; margin-top: 3px; }
+  .fan .lines { width: 86%; height: 26px; border: 2px dashed rgba(159,186,196,.4); border-bottom: none; border-radius: 14px 14px 0 0; }
+  .fan .kids { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; }
+  .fan .kid { text-align: center; padding: 10px 6px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(159,186,196,.25); }
+  .fan .kid b { display: block; font-family: var(--mono); color: #fff; font-size: clamp(13px, 1.4vw, 17px); margin-bottom: 6px; }
+  .fan .kid span.w { display: block; color: var(--text-dim); font-size: clamp(11px, 1.1vw, 13px); margin-top: 6px; }
+  .pill.sonnet { --c: var(--sapphire) } .pill.haiku { --c: var(--jade) }
+  /* assessment bars with weights */
+  .abars { display: grid; gap: 6px; font-family: var(--mono); font-size: clamp(12px, 1.3vw, 16px); }
+  .abars div { display: grid; grid-template-columns: minmax(0, 230px) 1fr 34px 40px; gap: 10px; align-items: center; }
+  .abars .b { height: 11px; border-radius: 3px; background: linear-gradient(90deg, var(--c, var(--sapphire)) var(--w), rgba(255,255,255,.08) var(--w)); }
+  .abars .v { text-align: right; color: #fff; font-weight: 700; } .abars .wt { text-align: right; color: var(--text-dim); font-size: .85em; }
+  .abars .blk span:first-child { color: var(--flamingo); }
+  .score { font-family: var(--pixel); font-size: clamp(30px, 4vw, 52px); color: #fff; line-height: 1.1; }
+  .band { display: inline-block; margin-top: 8px; font-family: var(--mono); font-size: 14px; font-weight: 700; padding: 3px 12px; border-radius: 999px;
+    color: var(--flamingo); border: 1px solid var(--flamingo); background: rgba(242,97,122,.1); }
+  .take { font-size: clamp(22px, 3vw, 40px); font-weight: 800; color: #fff; letter-spacing: -.01em; margin: 30px 0 8px; }
+  .take em { font-style: normal; color: var(--turmeric); }
+  .qa2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; max-width: 1060px; align-items: start; margin: 0 auto; }
+  .qa2 .person { display: grid; grid-template-columns: auto auto; gap: 18px; align-items: center; justify-content: center; text-align: left; }
+  .qa2 .person img.face { width: clamp(70px, 8vw, 104px); height: clamp(70px, 8vw, 104px); margin: 0 0 8px; }
+  .qa2 .person img.qrc { width: clamp(96px, 11vw, 140px); height: auto; border-radius: 0; border: none; box-shadow: none; margin: 0; }
+  .links { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
+  .links a { color: var(--sapphire); font-family: var(--mono); font-size: clamp(12px, 1.3vw, 15px); text-decoration: none; padding: 6px 14px;
+    border: 1px solid rgba(71,161,173,.4); border-radius: 999px; }
+  .links a:hover { color: #fff; border-color: var(--sapphire); }
+  .tight .card { padding: 12px 16px; } .tight .card h3 { font-size: clamp(15px, 1.55vw, 20px); margin-bottom: 4px; }
+  .tight .card p, .tight .card li { font-size: clamp(12px, 1.25vw, 16px); } .tight .card ul { gap: 5px; margin-top: 6px; }
+  .tight h2 { margin-bottom: 14px; }
+  @media (max-width: 760px) {
+    .seq { font-size: 11px; } .fan .kids { grid-template-columns: repeat(3, 1fr); } .qa2 { grid-template-columns: 1fr; }
+    .abars div { grid-template-columns: minmax(0, 140px) 1fr 30px 36px; } .tbl { font-size: 12px; display: block; overflow-x: auto; } .tbl td:first-child { white-space: normal; }
+  }
+  @media print { .fan .kids { grid-template-columns: repeat(6, 1fr) !important; } .qa2 { grid-template-columns: 1fr 1fr !important; } }
 </style>
 </head>
 <body>
 <div class="progress" id="progress"></div>
 <div class="brand"><img src="assets/logo.png" alt="Sensible Harness"> SENSIBLE HARNESS <span class="sep">|</span> <img class="tw" src="assets/tw-logo.png" alt="Thoughtworks"></div>
 <div class="presenter" id="presenter"></div>
-<div class="counter" id="counter">1 / 20</div>
+<div class="counter" id="counter">1 / 21</div>
 
 <div class="deck" id="deck">
-<section data-p="m" class="cover">
-  <img class="bird r" src="assets/logo.png" alt="Sensible Harness mascot" style="width:clamp(120px,16vw,210px)">
-  <h1 class="r" style="font-size:clamp(24px,4.2vw,50px);margin-bottom:16px">Sensible Harness</h1>
-  <p class="lead r" style="font-size:clamp(11px,2.1vw,27px);color:var(--mist);max-width:none;white-space:nowrap;margin-bottom:30px">AI-first delivery and maintenance in a single command</p>
-  <p class="lead r" style="font-family:var(--mono);font-size:clamp(14px,1.6vw,19px);letter-spacing:.04em;margin-bottom:4px">HSBC Engineering Week</p>
-  <p class="lead r" style="font-family:var(--mono);font-size:clamp(14px,1.6vw,19px);letter-spacing:.04em;margin-bottom:22px">October 2026 London</p>
+
+<!-- 01 · Cover -->
+<section data-p="m v" class="cover">
+  <img class="bird r" src="assets/logo.png" alt="Sensible Harness mascot" style="width:clamp(110px,14vw,190px)">
+  <h1 class="r" style="font-size:clamp(20px,3.4vw,42px);margin-bottom:18px;line-height:1.35">Gates the agents<br>can't skip</h1>
+  <p class="lead r" style="font-size:clamp(15px,2vw,26px);color:var(--mist);max-width:none;margin-bottom:26px">Sharing our Harness for AI Delivery and Maintenance</p>
+  <p class="lead r" style="font-family:var(--mono);font-size:clamp(14px,1.6vw,19px);letter-spacing:.04em;margin-bottom:4px">María José Lalama · Vitória Toebe</p>
+  <p class="lead r" style="font-family:var(--mono);font-size:clamp(13px,1.4vw,17px);letter-spacing:.04em;margin-bottom:22px">Claude Community · Barcelona</p>
   <img class="r" src="assets/tw-logo.png" alt="Thoughtworks" style="height:clamp(20px,2.3vw,30px);width:auto">
 </section>
 
-<section data-p="v a m">
-  <span class="kicker r">The team</span>
-  <h2 class="r">Who <em>we are</em></h2>
-  <div class="grid g3 team">
-    <div class="person r"><img src="assets/amy.jpg" alt="Amy Pellegrini"><h3>Amy Pellegrini</h3><p>Lead Developer</p><p class="area">AI-First Software Delivery</p></div>
-    <div class="person r"><img src="assets/majo.jpg" alt="Maria Jose Lalama"><h3>Maria Jose Lalama</h3><p>Senior AI Product Researcher</p><p class="area">AI/Works<sup>™</sup></p></div>
-    <div class="person r"><img src="assets/vitoria.jpg" alt="Vitória Toebe"><h3>Vitória Toebe</h3><p>Lead Developer</p><p class="area">AI-First Software Maintenance</p></div>
-  </div>
-</section>
-
-<section data-p="a" class="alt">
+<!-- 02 · Problem -->
+<section data-p="m" class="alt">
   <span class="kicker r">The problem</span>
-  <h2 class="r">Everyone uses AI. <em>Nobody uses it the same way.</em></h2>
-  <p class="lead r" style="max-width:none">Access to AI isn't 10× productivity. Generation scales; human review doesn't.</p>
+  <h2 class="r">Generation scales. <em>Review doesn't.</em></h2>
+  <p class="lead r" style="max-width:60ch">AI agents write code faster than any team can review it. That's where tech debt piles up, and teams inherit code nobody fully understands.</p>
   <div class="grid g3">
     <div class="card f r"><span class="big">01</span><h3>Ad hoc usage</h3><p>Every team rebuilds its own harness. Learned on the run, absent from capacity planning.</p></div>
-    <div class="card a r"><span class="big">02</span><h3>The evaluation gap</h3><p>Cognitive debt: AI produces faster than humans can review. We need to build trust to not need to review every line.</p></div>
-    <div class="card t r"><span class="big">03</span><h3>No guardrails, no visibility</h3><p>No shared conventions, no audit trail, no view of how ready a repo is for agents. Adoption turns fragmented, risky, hard to scale.</p></div>
+    <div class="card a r"><span class="big">02</span><h3>Cognitive debt</h3><p>The agent produces faster than people can review. We need trust that doesn't depend on reading every line.</p></div>
+    <div class="card t r"><span class="big">03</span><h3>No gates, no visibility</h3><p>No shared conventions, no audit trail, no idea what it cost, and no view of how ready a repo is for agents.</p></div>
   </div>
 </section>
 
+<!-- 03 · Video -->
 <section data-p="m">
-  <span class="kicker r">The tool</span>
-  <h2 class="r">Turn any repo into a <em>governed AI-first environment</em></h2>
-  <div class="flow r" style="margin-bottom:28px">
-    <span class="step">any git repo</span><span class="arrow">▸</span>
-    <span class="step" style="border-color:var(--turmeric);background:rgba(204,133,11,.14)"><code>sensible-harness</code></span><span class="arrow">▸</span>
-    <span class="step">agent-ready repo</span>
-  </div>
-  <div class="grid g3">
-    <div class="card s r"><h3>Modular CLI</h3><p>One command bootstraps any git repo</p></div>
-    <div class="card a r"><h3>Guardrails, not suggestions</h3><p>Agents and engineers run on the same track</p></div>
-    <div class="card j r"><h3>Battle-tested engineering practices</h3><p>As a behavioural agentic harness</p></div>
-  </div>
-  <p class="lead r" style="margin:28px 0 0;max-width:none"><b style="color:#fff">Scale AI adoption</b> without scaling the chaos.</p>
+  <span class="kicker demo r">The whole loop in 100 seconds</span>
+  <h2 class="r" style="margin-bottom:18px">One ticket, <em>init to merge</em></h2>
+  <video class="video r" src="assets/workflow.mp4" poster="assets/video-poster.jpg" controls preload="metadata" playsinline></video>
+  <p class="shot-cap r">GV-94 · Hackathon Dinner RSVP — CLI setup → assessment → ticketing → coding → validation → ship</p>
 </section>
 
-<section data-p="a">
-  <span class="kicker r">The foundations</span>
-  <h2 class="r">Thoughtworks <em>Sensible Defaults</em></h2>
-  <p class="lead r">Practices we already trust. The agent follows them; it doesn't replace them.</p>
-  <div class="grid g3" style="grid-template-columns:repeat(3,1fr)">
-    <div class="card s r"><h3>Iterative development</h3><p>Small slices, shipped and reviewed. Course corrections happen early, not at the end</p></div>
-    <div class="card t r"><h3>TDD</h3><p>Test-driven development: red, green, refactor</p></div>
-    <div class="card j r"><h3>Test pyramid</h3><p>Many unit tests, fewer integration, fewest end-to-end. Suites stay fast and trustworthy</p></div>
-    <div class="card t r"><h3>Small commits</h3><p>Atomic and conventional. Each one explains itself and reverts cleanly</p></div>
-    <div class="card a r"><h3>Human on the loop</h3><p>A human decides how much to delegate and when to validate</p></div>
-    <div class="card s r"><h3>CI/CD</h3><p>Catches defects before they reach production</p></div>
-  </div>
-</section>
-
-<section data-p="v a" class="alt">
-  <span class="kicker demo r">Demo 01 Baseline · 02 Init</span>
-  <h2 class="r">Sensible Harness: <em>AI-first delivery</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span>
-    <span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span>
-    <span class="step"><b>Agents</b> BA · Dev · QA</span>
-  </div>
-  <div class="split r compare">
-    <div class="term"><div class="bar"><i></i><i></i><i></i></div><pre><span class="c"># before: untouched main</span>
-<span class="p">$</span> claude
-<span class="warn">agent works with no rules in place</span><span class="cur"></span></pre></div>
-    <div class="term"><div class="bar"><i></i><i></i><i></i></div><pre><span class="c"># after</span>
-<span class="p">$</span> sensible-harness init
-<span class="p">$</span> sensible-harness doctor
-<span class="ok">✓ harness installed</span></pre></div>
-  </div>
-</section>
-
-<section data-p="v a">
-  <span class="kicker r">Tool onboarding</span>
-  <h2 class="r">Pick your <em>role</em></h2>
-  <div class="grid g3">
-    <div class="card j r"><span class="big">DEV</span><h3><code>/onboard-dev</code></h3><p>Dev agent and the delivery skills: pickup, tdd, commit, PR, CI, close</p></div>
-    <div class="card a r"><span class="big">QA</span><h3><code>/onboard-qa</code></h3><p>QA agent and assessments: pyramid, CI, pre-commit, qa-test</p></div>
-    <div class="card t r"><span class="big">BA</span><h3><code>/onboard-ba</code></h3><p>BA agent and how issues flow into delivery</p></div>
-  </div>
-  <p class="lead r" style="margin-top:26px">Each ends with: run <code>/assess-repo</code></p>
-</section>
-
-<section data-p="v a" class="alt">
-  <span class="kicker demo r">Demo 03 Assess</span>
-  <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">Before going AI-first, <em>know your repo</em></h2>
-  <p class="lead r" style="max-width:none;font-size:clamp(16px,1.8vw,22px);margin-bottom:6px"><code>/assess-repo</code> scores it across 10 dimensions, so you know how much you can trust agents on it</p>
-  <p class="r" style="margin:0 0 20px;color:var(--text-dim);font-family:var(--mono);font-size:clamp(12px,1.3vw,16px)">Your standards first. Thoughtworks defaults only where you have none.</p>
-  <div class="row r" style="gap:28px">
-  <div class="bars" style="flex:1 1 600px;font-size:clamp(12px,1.35vw,16px)">
-    <div><span>Architecture</span><span class="b" style="--c:var(--jade);--w:85%"></span></div>
-    <div><span>Dependency Health</span><span class="b" style="--c:var(--jade);--w:78%"></span></div>
-    <div><span>Code Quality Infrastructure</span><span class="b" style="--c:var(--sapphire);--w:72%"></span></div>
-    <div><span>Documentation</span><span class="b" style="--c:var(--sapphire);--w:64%"></span></div>
-    <div><span>CI/CD &amp; Delivery Conventions</span><span class="b" style="--c:var(--turmeric);--w:58%"></span></div>
-    <div><span>Test Quality</span><span class="b" style="--c:var(--turmeric);--w:55%"></span></div>
-    <div><span>Developer Experience</span><span class="b" style="--c:var(--turmeric);--w:52%"></span></div>
-    <div><span>Observability</span><span class="b" style="--c:var(--flamingo);--w:35%"></span></div>
-    <div><span>AI Governance</span><span class="b" style="--c:var(--flamingo);--w:30%"></span></div>
-    <div><span>Security Baseline</span><span class="b" style="--c:var(--flamingo);--w:20%"></span></div>
-  </div>
-  <div style="flex:0 1 300px;display:grid;gap:14px">
-    <div class="card s"><h3>Dashboard</h3><p>Score, band and blockers on one page</p></div>
-    <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
-  </div>
-  </div>
-  <p class="lead r" style="margin:22px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">Gaps become tickets, the team delivers them, and the next assessment shows <b style="color:#fff">how things have changed</b> since this one</p>
-</section>
-
-<section data-p="v a">
-  <span class="kicker demo r">Demo 03 Onboard</span>
-  <h2 class="r" style="font-size:clamp(28px,4vw,50px)">The assessment writes the <em>onboarding</em></h2>
-  <p class="lead r" style="max-width:none">Generated from this repo’s own analysis. Not a template.</p>
-  <div class="grid g2">
-    <div class="card t r"><h3><code>/onboard-me</code></h3><p>Understand the repo</p>
-      <ul><li>Architecture and where things live</li><li>How to test and ship a change</li><li>Known traps the assessment found</li><li>What agents must not do alone</li></ul></div>
-    <div class="card j r"><h3><code>/setup-workspace</code></h3><p>Get it running</p>
-      <ul><li>Prerequisites, checked in order</li><li>Install, database, each service</li><li>Verify the whole environment</li><li>Asks before changing your machine</li></ul></div>
-  </div>
-  <p class="lead r" style="margin:26px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">A faster start for every new teammate, with the same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits</p>
-</section>
-
-<section data-p="v a">
-  <span class="kicker r">Building blocks</span>
-  <h2 class="r">We started small, then <em>kept building</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step">Skill</span><span class="arrow">▸</span><span class="step">Workflow</span><span class="arrow">▸</span><span class="step">Agent</span>
-  </div>
-  <div class="grid g3">
-    <div class="card s r"><span class="big">01</span><h3>Skills</h3><p>Routine tasks, one job each: branch, checkout, commit, open PR</p></div>
-    <div class="card j r"><span class="big">02</span><h3>Workflows</h3><p>The same sequence, chained: pickup → plan → TDD → PR → close</p></div>
-    <div class="card t r"><span class="big">03</span><h3>Agents</h3><p>Run the workflows and stop at human gates: <code>/dev</code> <code>/qa</code> <code>/business-analyst</code></p></div>
-  </div>
-  <p class="lead r" style="margin:26px 0 0;max-width:none">Each step stayed useful on its own. Start with the task your team repeats.</p>
-</section>
-
+<!-- 04 · The model -->
 <section data-p="m" class="alt">
-  <span class="kicker demo r">Demo 04 BA backlog</span>
-  <h2 class="r">BA agent: <em>need → story</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step">Assessment gap</span><span class="step">Feature request</span><span class="arrow">▸</span>
-    <span class="step"><code>/business-analyst</code></span><span class="arrow">▸</span><span class="step">Jira ticket</span>
+  <span class="kicker r">The harness</span>
+  <h2 class="r">Guides, sensors, <em>and a meter</em></h2>
+  <div class="grid g3" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="card j r"><h3>Guides</h3><p>Steer the agent <b style="color:#fff">before</b> it acts</p>
+      <ul><li><code>AGENTS.md</code> behaviour rules</li><li><code>standards.md</code>: your bar, dated</li><li>Issue checklist · plan approval</li></ul></div>
+    <div class="card a r"><h3>Agents &amp; skills</h3><p>Do the work, one step at a time</p>
+      <ul><li>Planner subagent, main-agent executor</li><li>One spawn per step</li><li>Model pinned per skill</li></ul></div>
+    <div class="card f r"><h3>Sensors</h3><p>Verify what it built <b style="color:#fff">after</b> it acts</p>
+      <ul><li>TDD that checks its own test</li><li>CI · AC verification · QA</li><li>10-dimension assessment</li></ul></div>
   </div>
-  <ul>
-    <li class="r">Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
-    <li class="r">Stops to ask when scope is unclear</li>
-    <li class="r">Reorders the backlog</li>
-  </ul>
+  <div class="card t r" style="max-width:1150px;margin-top:16px"><h3 style="margin:0">Tokens, across all three</h3><p>Every step metered and the cost posted on the ticket, so everyone sees what delivery cost.</p></div>
+  <p class="r" style="margin:18px 0 0;color:var(--text-dim);font-size:clamp(13px,1.4vw,17px)">The guides encode practices we already trust (Thoughtworks Sensible Defaults): TDD, test pyramid, small commits, CI, a human on the loop.</p>
 </section>
 
-<section data-p="a">
-  <span class="kicker demo r">Demo 05 Dev plan</span>
-  <h2 class="r">Dev agent: <em>plan first</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step"><code>/dev GV-n</code></span><span class="arrow">▸</span>
-    <span class="step">Ticket check</span><span class="arrow">▸</span>
-    <span class="step">Branch</span><span class="arrow">▸</span>
-    <span class="step">Plan</span><span class="arrow">▸</span>
-    <span class="step" style="border-color:var(--turmeric)">👤 Approve</span><span class="arrow">▸</span>
-    <span class="step">Saved to ticket</span>
+<!-- 05 · What init writes -->
+<section data-p="v">
+  <span class="kicker demo r">Demo · setup</span>
+  <h2 class="r" style="margin-bottom:20px">What <code>init</code> <em>writes</em></h2>
+  <div class="split r" style="max-width:1150px;grid-template-columns:1.1fr 1fr">
+    <div class="term sm"><div class="bar"><i></i><i></i><i></i></div><pre><span class="p">$</span> npm i -g ./sensible-harness-0.2.0.tgz
+<span class="p">$</span> sensible-harness init
+<span class="p">?</span> Which platforms should Sensible Harness target?
+  <span class="ok">◉ Claude Code  ◉ Cursor</span>  ○ GitHub Copilot
+<span class="p">?</span> Which issue tracker does this repo use? <span class="y">› Jira</span>
+<span class="p">?</span> Jira board URL for this repo? <span class="y">› …/GV/boards/16685</span>
+<span class="ok">✔</span> 34 skills  <span class="c">(claude-code, cursor)</span>
+<span class="ok">✔</span> agents: dev · qa · business-analyst
+<span class="ok">✔</span> AGENTS.md  <span class="ok">✔</span> CLAUDE.md
+<span class="p">$</span> sensible-harness doctor
+<span class="ok">ok</span> <span class="c">every skill in manifest.json is on disk</span></pre></div>
+    <div class="term sm"><div class="bar"><i></i><i></i><i></i></div><pre>my-repo/
+├ <span class="y">CLAUDE.md</span>          <span class="c">@AGENTS.md</span>
+├ <span class="y">AGENTS.md</span>          <span class="c">rules + skill index</span>
+├ .sensible-harness/
+│ └ <span class="y">manifest.json</span>    <span class="c">skills · agents</span>
+│                    <span class="c">issueTracker</span>
+├ .claude/
+│ ├ agents/          <span class="c">dev · qa · BA</span>
+│ └ skills/          <span class="c">34 × SKILL.md</span>
+├ .cursor/rules/     <span class="c">same skills</span>
+└ src/               <span class="c">untouched</span></pre></div>
   </div>
-  <ul>
-    <li class="r">One plan step per acceptance criterion</li>
-    <li class="r">One round of changes before approval</li>
-  </ul>
+  <p class="sub r" style="margin:18px 0 0">One source, rendered per tool. <b>Plain Markdown in your repo</b>: inspect it, edit it, review it in PRs.</p>
 </section>
 
-<section data-p="a" class="alt">
-  <span class="kicker demo r">Demo 06 Dev implement</span>
-  <h2 class="r">Dev agent: <em>execute</em></h2>
-  <div class="term r"><div class="bar"><i></i><i></i><i></i></div><pre><span class="c"># branch: feature/GV-94-hackathon-dinner-rsvp</span>
-<span class="p">&gt;</span> /tdd  <span class="c"># AC 1</span>  <span class="ok">→ commit</span>
-<span class="p">&gt;</span> /tdd  <span class="c"># AC 2</span>  <span class="ok">→ commit</span>
-<span class="p">&gt;</span> /tdd  <span class="c"># AC 3</span>  <span class="ok">→ commit</span>
-<span class="p">&gt;</span> /open-pr   <span class="c"># + token-cost report</span>
-<span class="p">&gt;</span> /check-ci<span class="cur"></span></pre></div>
+<!-- 06 · Skill anatomy -->
+<section data-p="v" class="alt tight">
+  <span class="kicker r">Anatomy · skill</span>
+  <h2 class="r" style="margin-bottom:20px">A skill is Markdown <em>with a model pin</em></h2>
+  <div class="split r" style="max-width:1150px">
+    <div class="term sm"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">.claude/skills/tdd/SKILL.md</span></div><pre><span class="c">---</span>
+<span class="p">name:</span> tdd
+<span class="p">description:</span> Use whenever the user asks
+  to run one TDD cycle for a single
+  acceptance criterion…
+<span class="p">model:</span> <span class="y">sonnet</span>
+<span class="c">---</span>
+<span class="m">## Step 2</span> failing test (red)
+<span class="m">## Step 3</span> make it pass (green)
+<span class="m">## Step 4</span> refactor (while green)
+<span class="m">## Step 5</span> stop: green, <b>uncommitted</b></pre></div>
+    <div style="display:grid;gap:14px;align-content:start">
+      <div class="card j"><h3><span class="pill haiku">haiku</span> 15 skills · mechanical</h3><p>commit · commit-and-push · open-pr · check-ci · pickup-issue · jira · track-tokens · the agent facades · onboarding</p></div>
+      <div class="card s"><h3><span class="pill sonnet">sonnet</span> 19 skills · judgement</h3><p>tdd · close-issue · address-pr-comments · qa-test · the 14 <code>assess-*</code> skills · explain-assessment</p></div>
+      <p style="margin:0;color:var(--text-dim);font-size:clamp(13px,1.35vw,17px)">The <code>description</code> is the trigger. One job per skill, so each one can run alone, be chained, or be handed to an agent.</p>
+    </div>
+  </div>
+  <div class="flow r" style="margin-top:20px"><span class="step">Skill</span><span class="arrow">▸</span><span class="step">Workflow</span><span class="arrow">▸</span><span class="step">Agent</span></div>
 </section>
 
-<section data-p="a">
-  <span class="kicker demo r">Demo 07 QA test</span>
-  <h2 class="r">QA agent: <em>verify</em></h2>
+<!-- 07 · Agent anatomy -->
+<section data-p="v">
+  <span class="kicker r">Anatomy · agent</span>
+  <h2 class="r">The <code>tools:</code> list <em>is the guardrail</em></h2>
+  <table class="tbl r">
+    <thead><tr><th>Agent</th><th>tools:</th><th>model:</th><th>What it can't do</th></tr></thead>
+    <tbody>
+      <tr><td>dev</td><td class="n">Bash Read Grep Glob AskUserQuestion</td><td class="n">inherit</td><td><b style="color:#fff">No Edit, no Write.</b> It plans; it can't implement.</td></tr>
+      <tr><td>business-analyst</td><td class="n">Bash Read Grep Glob AskUserQuestion</td><td class="n">inherit</td><td>No Edit, no Write. Tickets only.</td></tr>
+      <tr><td>qa</td><td class="n">… + Write</td><td class="n">inherit</td><td>No Edit. Writes reports; read-only on the code under test.</td></tr>
+    </tbody>
+  </table>
+  <div class="grid g2" style="margin-top:22px;max-width:1150px">
+    <div class="card a r"><h3>Facade + subagent</h3><p><code>/dev</code>, <code>/qa</code> and <code>/business-analyst</code> are skills that route to an agent. Typing the command or saying "dev agent" reaches the same instructions.</p></div>
+    <div class="card t r"><h3>Honest caveat</h3><p><code>Bash</code> is still on the list, so this is a strong default, not a sandbox. Hard limits need hooks or permissions (see roadmap).</p></div>
+  </div>
+</section>
+
+<!-- 08 · Guides -->
+<section data-p="m" class="alt">
+  <span class="kicker sec-g r">Guides · before it acts</span>
+  <h2 class="r">What the agent reads <em>before it acts</em></h2>
   <div class="grid g3">
-    <div class="card s r"><h3>Test plan</h3><p>Built from the acceptance criteria</p></div>
-    <div class="card j r"><h3>Verdict per AC</h3><p><span class="pill" style="--c:var(--jade)">PASS</span> <span class="pill" style="--c:var(--flamingo)">FAIL</span></p></div>
-    <div class="card a r"><h3>Recommendation</h3><p>Close, or address gaps</p></div>
+    <div class="card j r"><h3><code>CLAUDE.md</code> → <code>@AGENTS.md</code></h3><p><code>CLAUDE.md</code> is one line. Claude Code reads the same <code>AGENTS.md</code> that Cursor and Copilot read.</p></div>
+    <div class="card s r"><h3>Behaviour rules</h3>
+      <ul><li><b>Security</b>: never read <code>.env*</code>; no <code>--no-verify</code></li><li><b>Evidence</b>: cite <code>file:line</code>; label inferences</li><li><b>Scope</b>: ask before new deps or CI changes</li><li><b>Quality</b>: never skip a test to go green</li><li><b>Communication</b>: report what you did, not what you meant to do</li></ul></div>
+    <div class="card t r"><h3><code>standards.md</code></h3>
+      <ul><li>Your bar, written down and dated</li><li>Weights, thresholds, band cut-offs</li><li>Older than 180 days → flagged stale</li><li>Editing it is how you disagree with our defaults</li></ul></div>
   </div>
-  <p class="lead r" style="margin-top:26px"><b style="color:#fff">QA never changes code.</b> It recommends.</p>
+  <p class="lead r" style="margin:24px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">Your standards first. <b style="color:#fff">Generic defaults only with explicit opt-in</b>, and marked as such.</p>
 </section>
 
-<section data-p="a" class="alt">
-  <span class="kicker demo r">Demo 08 Close loop</span>
-  <h2 class="r">Closing the <em>loop</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step"><code>/address-pr-comments</code></span><span class="arrow">▸</span>
-    <span class="step"><code>/check-ci</code></span><span class="arrow">▸</span>
-    <span class="step"><code>/close-issue</code></span>
-  </div>
-  <ul>
-    <li class="r"><code>/close-issue</code> checks every AC before merging</li>
-    <li class="r">Re-score a dimension: before / after</li>
-    <li class="r">QA's gap flows back to the BA</li>
-  </ul>
-</section>
-
+<!-- 09 · BA agent -->
 <section data-p="m">
-  <span class="kicker r">Cost</span>
-  <h2 class="r">Model choice &amp; <em>cost visibility</em></h2>
-  <p class="lead r" style="max-width:none">Tracks token consumption on every agent run.</p>
-  <div class="grid g3">
-    <div class="card s r"><span class="big">◧</span><h3>Model per skill</h3><p>Configured in the skill itself</p></div>
-    <div class="card t r"><span class="big">$</span><h3>Spend on the ticket</h3><p>Token report posted at task completion</p></div>
-    <div class="card j r"><span class="big">✓</span><h3>No surprises</h3><p>Per-model breakdown and cost estimate</p></div>
+  <span class="kicker sec-g r">Guides · ticket quality</span>
+  <h2 class="r" style="margin-bottom:20px">The BA agent <em>guards the ticket</em></h2>
+  <div class="row r" style="align-items:flex-start;gap:30px;max-width:1150px">
+    <div style="flex:1 1 560px"><img class="shot" src="assets/still-ba.jpg" alt="BA agent drafts GV-94 against the mandatory checklist and creates it on the Jira board"><p class="shot-cap">From the video · chapter 03</p></div>
+    <ul style="flex:1 1 360px;gap:14px">
+      <li style="font-size:clamp(15px,1.7vw,21px)"><b>Mandatory checklist</b>: Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
+      <li style="font-size:clamp(15px,1.7vw,21px)">Asks with <code>AskUserQuestion</code> when scope is unclear</li>
+      <li style="font-size:clamp(15px,1.7vw,21px)">Jira through <code>acli</code>, using the <code>jira</code> skill's commands, <b>never from memory</b></li>
+      <li style="font-size:clamp(15px,1.7vw,21px)">Assessment gaps arrive with their questions as Context</li>
+    </ul>
   </div>
-  <ul class="r" style="margin-top:28px;max-width:1100px;font-size:clamp(15px,1.7vw,22px)">
-    <li style="font-size:inherit"><b>Enterprises</b> see where the AI investment actually goes</li>
-    <li style="font-size:inherit"><b>Teams</b> optimise their usage and tailor their own harness</li>
-    <li style="font-size:inherit"><b>PMs</b> measure agent cost alongside delivery velocity</li>
-  </ul>
 </section>
 
+<!-- 10 · /dev split -->
+<section data-p="v" class="alt tight">
+  <span class="kicker sec-o r">Orchestration</span>
+  <h2 class="r" style="margin-bottom:18px">Why <code>/dev</code> is <em>split in two</em></h2>
+  <div class="row r" style="align-items:flex-start;gap:28px;max-width:1180px">
+    <div class="seq" style="flex:1 1 600px">
+      <div class="actor h">Human</div><div class="actor">Main agent</div><div class="actor">dev subagent</div>
+      <div class="msg" style="--a:1;--b:3"><code>/dev GV-94</code></div>
+      <div class="msg" style="--a:2;--b:4">spawn · foreground</div>
+      <div class="self" style="--a:3"><b>gate 2</b> issue quality · branch · Jira → In Progress · <b>draft plan</b></div>
+      <div class="msg l" style="--a:2;--b:4">draft plan (not approved)</div>
+      <div class="msg l gate" style="--a:1;--b:3">full plan · <b>ends turn</b></div>
+      <div class="msg gate" style="--a:1;--b:3"><b>gate 3</b> "approve"</div>
+      <div class="msg" style="--a:2;--b:4">resume → save to GV-94</div>
+      <div class="self" style="--a:2">execute: one Agent spawn per step, <code>model:</code> = pin</div>
+    </div>
+    <div style="flex:1 1 360px;display:grid;gap:10px">
+      <div class="card f"><h3>1 · Who can ask the human?</h3><p>A subagent has no reliable way to reach the human. The main agent owns the approval gate.</p></div>
+      <div class="card t"><h3>2 · Model pins need a spawn</h3><p>A skill's <code>model:</code> only applies when it runs as an Agent-tool spawn with <code>model</code>. Read inline, it runs on the session model.</p></div>
+      <div class="card s"><h3>3 · Subagents start cold</h3><p>Each step carries its own inputs. AC text is passed <b style="color:#fff">verbatim</b>, never paraphrased.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Plan contract -->
+<section data-p="v">
+  <span class="kicker sec-o r">Orchestration</span>
+  <h2 class="r" style="margin-bottom:18px">The plan is <em>a contract</em></h2>
+  <div class="row r" style="align-items:flex-start;gap:26px;max-width:1180px">
+    <div class="term sm" style="flex:1 1 680px"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">comment on GV-94</span></div><pre><span class="m">### Approved implementation plan — GV-94</span>
+<span class="c">Branch: feature/GV-94-hackathon-dinner-rsvp</span>
+ 1. <span class="y">[tdd | sonnet | spawn]</span> AC: "Seed the dinner event"
+ 2. <span class="ok">[commit | haiku | spawn]</span> AC1's changes only
+ 3. <span class="y">[tdd | sonnet | spawn]</span> AC: "Guests can RSVP"
+ 4. <span class="ok">[commit | haiku | spawn]</span> AC2's changes only
+ 5. <span class="ok">[commit | haiku | spawn]</span> mop-up · skip if clean
+ 6. <span class="ok">[open-pr | haiku | spawn]</span>
+ 7. <span class="ok">[check-ci | haiku | spawn]</span>   post-PR
+ 8. <span class="m">[address-pr-comments | sonnet | inline]</span>
+ 9. <span class="ok">[check-ci | haiku | spawn]</span>   after fixes
+10. <span class="m">[close-issue | sonnet | inline]</span> ACs + CI + merge
+<span class="c">Docs impact: none</span></pre></div>
+    <ul style="flex:1 1 340px;gap:14px">
+      <li style="font-size:clamp(14px,1.55vw,19px)"><b>spawn</b> = routed to the pinned model</li>
+      <li style="font-size:clamp(14px,1.55vw,19px)"><b>inline</b> = the step pauses for the human, so it stays in the main session</li>
+      <li style="font-size:clamp(14px,1.55vw,19px)">One <code>tdd</code> + one <code>commit</code> per AC</li>
+      <li style="font-size:clamp(14px,1.55vw,19px)"><b>Docs impact</b> decided at plan time. "None" must be written: silence reads as "not considered"</li>
+      <li style="font-size:clamp(14px,1.55vw,19px)">Saved on the ticket: <b>the audit trail</b></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 12 · Fan-out -->
 <section data-p="v" class="alt">
-  <span class="kicker r">Maintenance</span>
+  <span class="kicker demo r">Demo · execution</span>
+  <h2 class="r" style="margin-bottom:22px">One spawn, <em>one model, per step</em></h2>
+  <div class="fan r">
+    <div class="root"><b>Main agent</b><small>session model · executes the approved plan</small></div>
+    <div class="lines"></div>
+    <div class="kids">
+      <div class="kid"><b>tdd</b><span class="pill sonnet">sonnet</span><span class="w">AC1 red → green</span></div>
+      <div class="kid"><b>commit</b><span class="pill haiku">haiku</span><span class="w">feat(events): seed dinner</span></div>
+      <div class="kid"><b>tdd</b><span class="pill sonnet">sonnet</span><span class="w">AC2 red → green</span></div>
+      <div class="kid"><b>commit</b><span class="pill haiku">haiku</span><span class="w">feat(rsvp): guest RSVP</span></div>
+      <div class="kid"><b>open-pr</b><span class="pill haiku">haiku</span><span class="w">PR #142 → main</span></div>
+      <div class="kid"><b>check-ci</b><span class="pill haiku">haiku</span><span class="w">✔ green</span></div>
+    </div>
+  </div>
+  <div class="term sm r" style="margin-top:20px;max-width:1150px"><pre><span class="c"># every spawn gets the same prompt shape; nothing improvised</span>
+Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span> and follow it exactly. Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span>.</pre></div>
+  <div class="flow guards r" style="margin-top:14px">
+    <span class="step">Full test suite between <code>tdd</code> steps</span><span class="step">Stop and ask on any failure</span><span class="step">Never re-scope the plan: replan with the human</span>
+  </div>
+</section>
+
+<!-- 13 · Gates table -->
+<section data-p="v">
+  <span class="kicker sec-s r">Sensors</span>
+  <h2 class="r" style="margin-bottom:12px">Gates the agents <em>can't skip</em></h2>
+  <p class="sub r" style="margin:0 0 14px">…and, honestly, <b>what holds each one in place today</b>.</p>
+  <table class="tbl r">
+    <thead><tr><th>#</th><th>Gate</th><th>Owner</th><th>Held by</th><th>Stops</th></tr></thead>
+    <tbody>
+      <tr><td>2</td><td>Issue quality</td><td class="n">dev subagent</td><td><span class="tag i">instruction</span> <span class="tag h">human</span></td><td>Building on a thin ticket</td></tr>
+      <tr><td>3</td><td>Plan approval</td><td class="n">main agent</td><td><span class="tag h">human</span> <span class="tag st">plan on ticket</span></td><td>Unreviewed plans</td></tr>
+      <tr><td>4</td><td>TDD loop</td><td class="n">tdd · sonnet</td><td><span class="tag i">instruction</span></td><td>ACs without a failing test first</td></tr>
+      <tr><td>5</td><td>Atomic commits</td><td class="n">commit · haiku</td><td><span class="tag i">instruction</span> <span class="tag ex">repo's git hooks</span></td><td>"…and…" commits</td></tr>
+      <tr><td>6</td><td>Review comments</td><td class="n">address-pr-comments</td><td><span class="tag h">human, per comment</span></td><td>Silent re-scoping</td></tr>
+      <tr><td>7</td><td>AC verification</td><td class="n">close-issue</td><td><span class="tag i">instruction</span> <span class="tag h">human</span></td><td>Merging unfinished work</td></tr>
+      <tr><td>8–9</td><td>CI, twice after PR</td><td class="n">check-ci · haiku</td><td><span class="tag ex">CI</span> <span class="tag ex">branch protection</span></td><td>Red merges, stale green badges</td></tr>
+      <tr><td>—</td><td>Role boundaries</td><td class="n">agent files</td><td><span class="tag st">tools: list</span></td><td>Planner or QA editing code</td></tr>
+    </tbody>
+  </table>
+  <div class="legend r"><span><span class="tag i">instruction</span> the agent is told</span><span><span class="tag st">structural</span> the setup enforces or records</span><span><span class="tag ex">external</span> outside the agent</span><span><span class="tag h">human</span> a person decides</span></div>
+</section>
+
+<!-- 14 · TDD sensor -->
+<section data-p="v" class="alt tight">
+  <span class="kicker sec-s r">Sensors · TDD</span>
+  <h2 class="r" style="margin-bottom:20px">A sensor that <em>checks its own test</em></h2>
+  <div class="row r" style="align-items:flex-start;gap:26px;max-width:1180px">
+    <div class="term sm" style="flex:1 1 640px"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">illustrative run</span></div><pre><span class="p">&gt;</span> tdd · AC: "Guests can RSVP"
+<span class="bad">RED</span>    guest_can_rsvp … <span class="warn">PASSED on first run ⚠ suspect</span>
+       break prod code: rsvp() returns early
+       re-run → <span class="bad">still PASSES</span>
+<span class="bad">✗</span>      test doesn't exercise the AC → rewrite
+<span class="bad">RED</span>    guest_can_rsvp … FAILED <span class="ok">✓ right reason</span>
+<span class="ok">GREEN</span>  smallest change · full suite green
+<span class="p">REFACTOR</span> just-added code only · still green
+<span class="y">STOP</span>   green and <b>uncommitted</b> → next plan step</pre></div>
+    <div style="flex:1 1 360px;display:grid;gap:10px">
+      <div class="card f"><h3>Passes first time?</h3><p>Break the production code on purpose. If the test still passes, the test is wrong.</p></div>
+      <div class="card t"><h3>AC too big?</h3><p>Stop and ask the caller to split it. The skill never splits silently.</p></div>
+      <div class="card s"><h3>Can't stay minimal?</h3><p>Stop. Either the AC is too coarse or earlier work needs revisiting.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · QA + close-issue -->
+<section data-p="v" class="tight">
+  <span class="kicker demo r">Demo · verification</span>
+  <h2 class="r" style="margin-bottom:20px">QA verifies. <em><code>close-issue</code> refuses.</em></h2>
+  <div class="row r" style="align-items:flex-start;gap:28px;max-width:1180px">
+    <div style="flex:1 1 560px"><img class="shot" src="assets/still-qa.jpg" alt="QA agent test plan for GV-94: five scenarios across two ACs, all passing, recommendation close"><p class="shot-cap">From the video · chapter 05</p></div>
+    <div style="flex:1 1 360px;display:grid;gap:12px">
+      <div class="card a"><h3><code>qa-test</code></h3><ul><li>Test plan from the ACs: happy path, edge, negative</li><li>Runs the feature; verdict to issue + PR</li><li>Recommends fixes, never applies them</li></ul></div>
+      <div class="card f"><h3><code>close-issue</code></h3><ul><li>Pass/fail per AC against the diff</li><li>Any AC unverified → <b style="color:#fff">no merge</b></li><li>CI failing → <b style="color:#fff">no merge</b></li><li>Squash-merge, then post token spend</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 · Assessment -->
+<section data-p="m" class="alt tight">
+  <span class="kicker sec-s r">Sensors · 10-dimension assessment</span>
+  <h2 class="r" style="margin-bottom:12px">The assessment, <em>under the hood</em></h2>
+  <div class="row r" style="align-items:flex-start;gap:30px;max-width:1180px">
+    <div class="abars" style="flex:1 1 560px">
+      <div><span>Documentation</span><span class="b" style="--w:72%"></span><span class="v">72</span><span class="wt">15%</span></div>
+      <div class="blk"><span>⛔ Code quality infra</span><span class="b" style="--w:49%;--c:var(--flamingo)"></span><span class="v">49</span><span class="wt">15%</span></div>
+      <div><span>Test quality</span><span class="b" style="--w:64%"></span><span class="v">64</span><span class="wt">13%</span></div>
+      <div><span>Architecture</span><span class="b" style="--w:70%"></span><span class="v">70</span><span class="wt">12%</span></div>
+      <div><span>CI/CD &amp; conventions</span><span class="b" style="--w:68%"></span><span class="v">68</span><span class="wt">10%</span></div>
+      <div class="blk"><span>⛔ Security baseline</span><span class="b" style="--w:18%;--c:var(--flamingo)"></span><span class="v">18</span><span class="wt">10%</span></div>
+      <div><span>Developer experience</span><span class="b" style="--w:66%"></span><span class="v">66</span><span class="wt">10%</span></div>
+      <div class="blk"><span>⛔ Observability</span><span class="b" style="--w:41%;--c:var(--flamingo)"></span><span class="v">41</span><span class="wt">5%</span></div>
+      <div><span>Dependency health</span><span class="b" style="--w:75%"></span><span class="v">75</span><span class="wt">5%</span></div>
+      <div><span>AI governance</span><span class="b" style="--w:62%"></span><span class="v">62</span><span class="wt">5%</span></div>
+    </div>
+    <div style="flex:1 1 360px;display:grid;gap:10px">
+      <div><div class="score">59/100</div><span class="band">Developing · 3 blockers</span></div>
+      <div class="card f"><h3>The cap rule</h3><p>A dimension under 50, or any P0, is a <b style="color:#fff">blocker</b>. Blockers cap the band at Developing; the score is left alone so runs stay comparable.</p></div>
+      <div class="card a"><h3>Contradictions</h3><p>Docs vs code, rated P0–P3, with questions only a human can answer. They go straight to the BA.</p></div>
+      <div class="card j"><h3>Writes the onboarding</h3><p><code>/onboard-me</code> + <code>/setup-workspace</code>. The manifest records their sources, so <code>/dev</code> flags them when a change makes them stale.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · Tokens -->
+<section data-p="m" class="tight">
+  <span class="kicker sec-t r">Tokens</span>
+  <h2 class="r" style="margin-bottom:18px">Every step <em>metered</em>, cost on the ticket</h2>
+  <div class="row r" style="align-items:flex-start;gap:26px;max-width:1180px">
+    <div class="term sm" style="flex:1 1 600px"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">comment on GV-94 · track-tokens</span></div><pre><span class="c">task                    model      input   output</span>
+tdd · AC1               <span class="p">sonnet</span>    41,208    6,114
+commit                  <span class="ok">haiku</span>      3,902      412
+tdd · AC2               <span class="p">sonnet</span>    38,771    5,630
+commit·open-pr·check-ci <span class="ok">haiku</span>     11,540    1,207
+<span class="c">────────────────────────────────────────────────</span>
+<span class="c">model        input    output     est. cost</span>
+<span class="p">sonnet</span>      79,979    11,744         <span class="y">$0.42</span>
+<span class="ok">haiku</span>       15,442     1,619         <span class="y">$0.02</span>
+<b>total</b>                                 <span class="y"><b>$0.44</b></span>
+<span class="c">illustrative · list prices: sonnet $3/$15, haiku $1/$5 per MTok
+the real report also has cache-read and cache-write columns</span></pre></div>
+    <div style="flex:1 1 360px;display:grid;gap:10px">
+      <div class="card t"><h3>Reads the transcripts</h3><p><code>~/.claude/projects/&lt;slug&gt;/&lt;session&gt;.jsonl</code> plus <code>subagents/agent-&lt;id&gt;.jsonl</code> and its <code>.meta.json</code></p></div>
+      <div class="card s"><h3>Counts once</h3><p>Sidechain lines are dropped from the main session; subagents are counted from their own files.</p></div>
+      <div class="card f"><h3>Unknown ≠ free</h3><p>A model with no price shows "unpriced" and stays out of the total. Never $0.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · Lessons -->
+<section data-p="m v" class="alt tight">
+  <span class="kicker r">Lessons</span>
+  <h2 class="r">What we learned <em>building it</em></h2>
+  <div class="grid g3" style="grid-template-columns:repeat(3,1fr)">
+    <div class="card f r"><h3>Text before a tool call may render after it</h3><p>The approval gate ends its turn on the full plan text. No <code>AskUserQuestion</code> for long plans.</p></div>
+    <div class="card t r"><h3>Background agents can't ask</h3><p>Anything that may need the human runs in the foreground.</p></div>
+    <div class="card a r"><h3>Subagents talk about themselves</h3><p>They explained their own tools to the user. Now there's an explicit rule: never mention your runtime.</p></div>
+    <div class="card s r"><h3>Model pins fail silently</h3><p>A pin does nothing when a skill is read inline. Route through Agent-tool spawns.</p></div>
+    <div class="card j r"><h3>Tokens got counted twice</h3><p>Subagent activity also appears as sidechain lines in the main transcript.</p></div>
+    <div class="card f r"><h3>Let code do the arithmetic</h3><p>Summing transcript entries "by reasoning" goes subtly wrong. The skill runs a Node script.</p></div>
+  </div>
+</section>
+
+<!-- 19 · Maintenance -->
+<section data-p="v">
+  <span class="kicker r">Maintenance · in progress</span>
   <h2 class="r" style="margin-bottom:12px">AI-first software <em>maintenance</em></h2>
   <p class="lead r" style="max-width:none;font-size:clamp(15px,1.6vw,20px);margin-bottom:34px">One connected view across your ecosystem finds the root cause faster, and with more certainty</p>
   <div class="vid r" id="vid">
@@ -486,73 +681,37 @@
   </div>
 </section>
 
-<section data-p="v a m">
-  <span class="kicker r">Roadmap</span>
-  <h2 class="r">What’s <em>next?</em></h2>
+<!-- 20 · Next + takeaway -->
+<section data-p="m" class="alt">
+  <span class="kicker r">What's next</span>
+  <h2 class="r">From instructions <em>to guarantees</em></h2>
   <div class="grid g3">
-    <div class="card a r"><h3>AI-First Software Maintenance</h3><p>Operational agents with skills beyond delivery. They connect across your application ecosystem to see the full picture of operations, trace issues to their root cause and propose fixes.</p></div>
-    <div class="card t r"><h3>Socratic Prompting as default</h3><p>The agent asks the questions, not the human. It removes ambiguity up front and keeps people doing the thinking, so know-how stays in the team.</p></div>
-    <div class="card j r"><h3>Evals and Feedback</h3><p>Every agent has evals criteria that catch when a step drifts from what’s expected. A feedback skill lets users flag what’s working and what isn’t, so the harness keeps improving.</p></div>
+    <div class="card f r"><h3>Deterministic gates</h3><p>Claude Code hooks that block <code>--no-verify</code>, pushes to <code>main</code>, and merges before AC verification. Instructions become guarantees.</p></div>
+    <div class="card t r"><h3>Socratic prompting by default</h3><p>The agent asks the questions. Ambiguity goes away up front, and people keep doing the thinking.</p></div>
+    <div class="card j r"><h3>Evals and feedback</h3><p>Every agent gets evals that catch drift, plus a feedback skill so the harness keeps improving.</p></div>
   </div>
+  <p class="take r">Put gates in <em>structure</em>, not prose.</p>
+  <p class="lead r" style="max-width:none;font-size:clamp(15px,1.7vw,21px)">Your standards, context and workflows live in your repo: versioned, inspectable, yours.</p>
 </section>
 
-<section class="alt" data-p="v">
-  <span class="kicker r">Conclusion</span>
-  <h2 class="r"><code style="color:var(--sapphire);background:rgba(71,161,173,.12)">sensible-harness init</code></h2>
-  <div class="grid g4">
-    <div class="card j r"><span class="big">01</span><h3>Increase velocity while keeping quality</h3>
-      <ul><li>Easy to adopt</li><li>Low risk to run</li><li>No compromise on code quality</li></ul></div>
-    <div class="card s r"><span class="big">02</span><h3>A tool that evolves with your needs</h3>
-      <ul><li>Battle-tested workflows</li><li>Built by Lead Devs and Product Managers</li><li>Adapt it to your project</li></ul></div>
-    <div class="card a r"><span class="big">03</span><h3>Onboard teammates faster</h3>
-      <ul><li>Aligned from day one</li><li>Same AI-First delivery standards</li><li>No harness built from scratch</li></ul></div>
-    <div class="card f r"><span class="big">04</span><h3>A harness that is yours</h3>
-      <ul><li>Assistants are a commodity</li><li>Your standards, context and workflows live in your repos</li><li>Versioned, inspectable, evolving with you</li></ul></div>
-  </div>
-</section>
-
-<section class="cover alt" data-p="v a m">
-  <h1 class="r">Q&amp;A</h1>
-  <div class="grid g3 team" style="margin:0 auto;max-width:1020px">
-    <div class="person r">
-      <img src="assets/amy.jpg" alt="Amy Pellegrini" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
-      <h3>Amy Pellegrini</h3>
-      <p>Lead Developer</p>
-      <p class="area">AI-First Software Delivery</p>
-      <img src="assets/qrcode_amy.png" alt="QR code for Amy Pellegrini" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+<!-- 21 · Q&A + resources -->
+<section class="cover" data-p="m v">
+  <h1 class="r" style="margin-bottom:28px">Q&amp;A</h1>
+  <div class="qa2 r">
+    <div class="person">
+      <div><img class="face" src="assets/majo.jpg" alt="María José Lalama"><h3>María José Lalama</h3><p>Senior AI Product Researcher</p><p class="area">AI/Works<sup>™</sup></p></div>
+      <img class="qrc" src="assets/qrcode_maria.png" alt="QR code for María José Lalama">
     </div>
-    <div class="person r">
-      <img src="assets/majo.jpg" alt="Maria Jose Lalama" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
-      <h3>Maria Jose Lalama</h3>
-      <p>Senior AI Product Researcher</p>
-      <p class="area">AI/Works<sup>™</sup></p>
-      <img src="assets/qrcode_maria.png" alt="QR code for Maria Jose Lalama" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
-    </div>
-    <div class="person r">
-      <img src="assets/vitoria.jpg" alt="Vitória Toebe" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
-      <h3>Vitória Toebe</h3>
-      <p>Lead Developer</p>
-      <p class="area">AI-First Software Maintenance</p>
-      <img src="assets/qrcode_vitoria.png" alt="QR code for Vitória Toebe" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+    <div class="person">
+      <div><img class="face" src="assets/vitoria.jpg" alt="Vitória Toebe"><h3>Vitória Toebe</h3><p>Lead Developer</p><p class="area">AI-First Software Maintenance</p></div>
+      <img class="qrc" src="assets/qrcode_vitoria.png" alt="QR code for Vitória Toebe">
     </div>
   </div>
-</section>
-
-<section data-p="v a m">
-  <span class="kicker r">Resources</span>
-  <h2 class="r">Our <em>XConf Europe 2026</em> talks</h2>
-  <div class="split">
-    <a class="card s res r" href="https://youtu.be/HuS4O5KhtWQ" target="_blank" rel="noopener">
-      <img src="assets/xconf-maintenance-delivery.jpg" alt="Talk thumbnail: AI-first software maintenance and AI-first software delivery, Vitória Toebe and Amy Pellegrini">
-      <h3>AI-First Software Maintenance &amp; AI-First Software Delivery</h3>
-      <p class="url">youtu.be/HuS4O5KhtWQ</p>
-    </a>
-    <a class="card f res r" href="https://youtu.be/4EPDghNJcqQ" target="_blank" rel="noopener">
-      <img src="assets/xconf-clarity-first.jpg" alt="Talk thumbnail: The clarity-first method, María José Lalama">
-      <h3>Clarity-First Method: Vibe-coding products without tech debt</h3>
-      <p class="url">youtu.be/4EPDghNJcqQ</p>
-    </a>
+  <div class="links r">
+    <a href="https://youtu.be/HuS4O5KhtWQ" target="_blank" rel="noopener">▶ XConf: AI-First Maintenance &amp; Delivery</a>
+    <a href="https://youtu.be/4EPDghNJcqQ" target="_blank" rel="noopener">▶ XConf: Clarity-First Method</a>
   </div>
+  <p class="r" style="margin-top:18px;color:var(--text-dim);font-size:14px">Sensible Harness was built with Amy Pellegrini and the AI-First Software Delivery team.</p>
 </section>
 </div>
 <div class="hint">← → / space · F fullscreen</div>
@@ -568,9 +727,9 @@
   const update = () => { const i = current(); showPresenter(i); counter.textContent = `${i + 1} / ${slides.length}`;
     progress.style.width = `${((i + 1) / slides.length) * 100}%`; };
 
-  const PEOPLE = { v: ["Vitória", "assets/vitoria.jpg"], a: ["Amy", "assets/amy.jpg"], m: ["Majo", "assets/majo.jpg"] };
+  const PEOPLE = { v: ["Vitória", "assets/vitoria.jpg"], m: ["Majo", "assets/majo.jpg"] };
   const chip = document.getElementById('presenter');
-  const showPresenter = i => { const ks = (slides[i].dataset.p || '').split(' ').filter(Boolean);
+  const showPresenter = i => { const ks = (slides[i].dataset.p || '').split(' ').filter(k => PEOPLE[k]);
     chip.hidden = !ks.length;
     chip.innerHTML = ks.map(k => `<img src="${PEOPLE[k][1]}" alt="">`).join('') + ks.map(k => PEOPLE[k][0]).join(' · '); };
   deck.addEventListener('scroll', update, { passive: true }); update();
@@ -581,6 +740,7 @@
   const replay = () => { vid.classList.add('off'); void vid.offsetWidth; vid.classList.remove('off'); };
   document.getElementById('replay').addEventListener('click', replay);
   addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('video')) return; // let the video player keep its own keys
     if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(current() + 1); }
     if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(current() - 1); }
     if (e.key === 'Home') go(0);
