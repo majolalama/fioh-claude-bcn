@@ -350,6 +350,26 @@
   .kids-mini { display: grid; gap: 8px; font-family: var(--mono); font-size: clamp(12px, 1.3vw, 16px); color: var(--mist); }
   .kids-mini > span { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,.05);
     border: 1px solid rgba(159,186,196,.22); border-radius: 10px; padding: 7px 12px; }
+  .demo-split.wide { grid-template-columns: minmax(0, .8fr) minmax(0, 1.5fr); }
+  /* Resources + Q&A */
+  .res { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1180px; }
+  .res-card { display: grid; gap: 8px; align-content: start; text-decoration: none; color: inherit; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(159,186,196,.22); border-radius: 14px; padding: 12px 12px 16px; transition: border-color .2s; }
+  .res-card:hover { border-color: var(--turmeric); }
+  .res-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; display: block; }
+  .res-card .src { font-family: var(--mono); font-size: clamp(10px, 1vw, 12px); letter-spacing: .1em; text-transform: uppercase; color: var(--turmeric); }
+  .res-card h3 { font-size: clamp(14px, 1.5vw, 19px); line-height: 1.3; margin: 0; color: #fff; }
+  .res-card .res-by { font-size: clamp(11px, 1.1vw, 14px); color: var(--text-dim); }
+  .qa-wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 30px; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .lin { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; font-family: var(--mono); font-size: clamp(12px, 1.2vw, 15px); color: var(--mist); text-decoration: none; }
+  .lin .li { width: 20px; height: 20px; flex: none; }
+  .feedback { display: grid; justify-items: center; gap: 12px; text-align: center; max-width: 250px; padding: 18px; border-radius: 14px;
+    border: 1px solid var(--turmeric); background: rgba(204,133,11,.08); }
+  .feedback h3 { margin: 0 0 4px; color: #fff; } .feedback p { margin: 0; font-size: clamp(12px, 1.2vw, 15px); color: var(--text-dim); }
+  .qr-slot { width: clamp(120px, 13vw, 170px); aspect-ratio: 1; display: grid; place-items: center; border-radius: 10px; background: #fff; color: #555;
+    font-family: var(--mono); font-size: 12px; line-height: 1.4; }
+  .qr-slot img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+  @media (max-width: 900px) { .res, .qa-wrap { grid-template-columns: 1fr; } }
   @media (max-width: 900px) { .demo-split { grid-template-columns: 1fr; } }
   @media print { .demo-split { grid-template-columns: minmax(0,1fr) minmax(0,1.08fr) !important; } }
 </style>
@@ -413,7 +433,7 @@
 </section>
 
 <!-- 05 · Sensible Defaults -->
-<section data-p="m">
+<section data-p="v">
   <span class="kicker r">The foundations</span>
   <h2 class="r">Delivery practices <em>we already trust</em></h2>
   <p class="lead r">The agent follows them; it doesn't replace them.</p>
@@ -427,10 +447,10 @@
   </div>
 </section>
 
-<!-- 06 · What init writes -->
+<!-- 06 · What it delivers -->
 <section data-p="v" class="tight">
   <span class="kicker demo r">Demo 1 · Setup</span>
-  <h2 class="r" style="margin-bottom:18px">What <code>init</code> <em>writes</em></h2>
+  <h2 class="r" style="margin-bottom:18px">What it <em>delivers</em></h2>
   <div class="demo-split">
     <div class="demo-text r">
       <div class="flow"><span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span><span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span><span class="step"><b>Agents</b> BA · Dev · QA</span></div>
@@ -438,25 +458,28 @@
       <div class="card s"><h3><span class="pill sonnet">sonnet</span> 19 skills · judgement</h3><p>tdd · close-issue · address-pr-comments · qa-test · the <code>assess-*</code> skills</p></div>
       <p class="demo-note">The <code>description</code> is the trigger and <code>model:</code> pins the model. One job per skill, so each one can run alone, be chained, or be handed to an agent.</p>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/setup.mp4" poster="assets/demo/setup.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/setup.mp4" poster="assets/demo/setup.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
 <!-- 07 · Pick your role -->
 <section data-p="v">
-  <span class="kicker r">Tool onboarding</span>
-  <h2 class="r">Pick your <em>role</em></h2>
-  <div class="grid g3">
-    <div class="card j r"><span class="big">DEV</span><h3><code>/onboard-dev</code></h3><p>Dev agent and the delivery skills: pickup, tdd, commit, PR, CI, close</p></div>
-    <div class="card a r"><span class="big">QA</span><h3><code>/onboard-qa</code></h3><p>QA agent and assessments: pyramid, CI, pre-commit, qa-test</p></div>
-    <div class="card t r"><span class="big">BA</span><h3><code>/onboard-ba</code></h3><p>BA agent and how issues flow into delivery</p></div>
+  <span class="kicker demo r">Demo 2 · Tool onboarding</span>
+  <h2 class="r" style="margin-bottom:18px">Pick your <em>role</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="card j"><h3><span class="pill sonnet">DEV</span> <code>/onboard-dev</code></h3><p>Dev agent and the delivery skills: pickup, tdd, commit, PR, CI, close</p></div>
+      <div class="card a"><h3><span class="pill sonnet">QA</span> <code>/onboard-qa</code></h3><p>QA agent and assessments: pyramid, CI, pre-commit, qa-test</p></div>
+      <div class="card t"><h3><span class="pill sonnet">BA</span> <code>/onboard-ba</code></h3><p>BA agent and how issues flow into delivery</p></div>
+      <p class="demo-note">Each one ends with: run <code>/assess-repo</code></p>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/onboard-ba.mp4" poster="assets/demo/onboard-ba.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
-  <p class="lead r" style="margin-top:26px">Each ends with: run <code>/assess-repo</code></p>
 </section>
 
 <!-- 08 · Assessment -->
 <section data-p="v" class="alt">
-  <span class="kicker demo r">Demo 2 · Assess</span>
+  <span class="kicker demo r">Demo 3 · Assess</span>
   <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">Before going AI-first, <em>know your repo</em></h2>
   <div class="demo-split">
     <div class="demo-text r">
@@ -466,13 +489,13 @@
       <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
       <p class="demo-note">Gaps become tickets, and the next assessment shows <b style="color:#fff">how things have changed</b>.</p>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/assess.mp4" poster="assets/demo/assess.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/assess.mp4" poster="assets/demo/assess.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
 <!-- 09 · Onboarding -->
 <section data-p="v">
-  <span class="kicker demo r">Demo 3 · Onboard</span>
+  <span class="kicker demo r">Demo 4 · Onboard</span>
   <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">The assessment writes the <em>onboarding</em></h2>
   <div class="demo-split">
     <div class="demo-text r">
@@ -481,13 +504,13 @@
       <div class="card j"><h3><code>/setup-workspace</code> · get it running</h3><p>Prerequisites in order, install each service, verify, ask before changing your machine</p></div>
       <p class="demo-note">Same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits.</p>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/onboard.mp4" poster="assets/demo/onboard.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/onboard.mp4" poster="assets/demo/onboard.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
 <!-- 10 · BA agent -->
 <section data-p="m">
-  <span class="kicker demo r">Demo 4 · BA agent</span>
+  <span class="kicker demo r">Demo 5 · BA agent</span>
   <h2 class="r" style="margin-bottom:18px">The BA agent <em>guards the ticket</em></h2>
   <div class="demo-split">
     <div class="demo-text r">
@@ -498,13 +521,13 @@
         <li>Assessment gaps arrive with their questions as Context</li>
       </ul>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/ba.mp4" poster="assets/demo/ba.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/ba.mp4" poster="assets/demo/ba.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
 <!-- 11 · Dev plan -->
 <section data-p="v">
-  <span class="kicker demo r">Demo 5 · Dev plan</span>
+  <span class="kicker demo r">Demo 6 · Dev plan</span>
   <h2 class="r" style="margin-bottom:18px">Dev agent: <em>plan first</em></h2>
   <div class="demo-split">
     <div class="demo-text r">
@@ -515,13 +538,13 @@
         <li>Nothing runs until a person approves the plan</li>
       </ul>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/dev-plan.mp4" poster="assets/demo/dev-plan.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/dev-plan.mp4" poster="assets/demo/dev-plan.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
 <!-- 12 · Fan-out -->
 <section data-p="v" class="alt">
-  <span class="kicker demo r">Demo 6 · Execution</span>
+  <span class="kicker demo r">Demo 7 · Execution</span>
   <h2 class="r" style="margin-bottom:18px">One spawn, <em>one model, per step</em></h2>
   <div class="demo-split">
     <div class="demo-text r">
@@ -541,7 +564,7 @@ Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
         <li>Never re-scope the plan: replan with the human</li>
       </ul>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/execution.mp4" poster="assets/demo/execution.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/execution.mp4" poster="assets/demo/execution.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
@@ -558,7 +581,7 @@ Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
     <span class="chk" style="left:10%"></span><span class="chk" style="left:30%"></span><span class="chk" style="left:50%"></span><span class="chk" style="left:70%"></span><span class="chk" style="left:90%"></span>
   </div>
   <div class="gates5 r">
-    <div class="card"><span class="n">01</span><p class="if">If the ticket is thin</p><p class="then">→ it won't start</p><span class="who">👤 BA / human</span></div>
+    <div class="card"><span class="n">01</span><p class="if">If the ticket is incomplete</p><p class="then">→ it won't start</p><span class="who">👤 BA / human</span></div>
     <div class="card"><span class="n">02</span><p class="if">If there's no approved plan</p><p class="then">→ it won't write code</p><span class="who">👤 human</span></div>
     <div class="card self"><span class="n">03</span><p class="if">If the test passes the first time</p><p class="then">→ it breaks the code to prove the test works</p><span class="who">🤖 self-check</span></div>
     <div class="card"><span class="n">04</span><p class="if">If an AC isn't covered</p><p class="then">→ it won't merge</p><span class="who">👤 human</span></div>
@@ -569,45 +592,33 @@ Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
 
 <!-- 14 · QA + close-issue -->
 <section data-p="v" class="tight">
-  <span class="kicker demo r">Demo 7 · Verification</span>
+  <span class="kicker demo r">Demo 8 · Verification</span>
   <h2 class="r" style="margin-bottom:18px">QA verifies. <em><code>close-issue</code></em></h2>
-  <div class="demo-split">
+  <div class="demo-split wide">
     <div class="demo-text r">
       <div class="card a"><h3><code>qa-test</code></h3><ul><li>Test plan from the ACs: happy path, edge, negative</li><li>Runs the feature; verdict to issue + PR</li><li>Recommends fixes, never applies them</li></ul></div>
       <div class="card f"><h3><code>close-issue</code></h3><ul><li>Pass/fail per AC against the diff</li><li>Any AC unverified or CI failing → <b style="color:#fff">no merge</b></li><li>Squash-merge, then post token spend</li></ul></div>
     </div>
-    <figure class="demo-vid r"><video data-demo src="assets/demo/qa.mp4" poster="assets/demo/qa.jpg" muted playsinline preload="auto"></video></figure>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/qa.mp4" poster="assets/demo/qa.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
 <!-- 15 · Tokens -->
 <section data-p="m" class="tight">
-  <span class="kicker sec-t r">Tokens</span>
-  <h2 class="r" style="margin-bottom:8px">Every step <em>metered</em>, cost on the ticket</h2>
-  <p class="lead r" style="max-width:none;margin-bottom:14px">Tracks token consumption on every agent run.</p>
-  <div class="row r" style="align-items:flex-start;gap:26px;max-width:1180px">
-    <div class="term sm" style="flex:1 1 600px"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">comment on GV-94 · track-tokens</span></div><pre><span class="c">task                    model      input   output</span>
-tdd · AC1               <span class="p">sonnet</span>    41,208    6,114
-commit                  <span class="ok">haiku</span>      3,902      412
-tdd · AC2               <span class="p">sonnet</span>    38,771    5,630
-commit·open-pr·check-ci <span class="ok">haiku</span>     11,540    1,207
-<span class="c">────────────────────────────────────────────────</span>
-<span class="c">model        input    output     est. cost</span>
-<span class="p">sonnet</span>      79,979    11,744         <span class="y">$0.42</span>
-<span class="ok">haiku</span>       15,442     1,619         <span class="y">$0.02</span>
-<b>total</b>                                 <span class="y"><b>$0.44</b></span>
-<span class="c">illustrative · list prices: sonnet $3/$15, haiku $1/$5 per MTok
-the real report also has cache-read and cache-write columns</span></pre></div>
-    <div style="flex:1 1 360px;display:grid;gap:10px">
+  <span class="kicker demo r">Demo 9 · Tokens</span>
+  <h2 class="r" style="margin-bottom:18px">Every step <em>metered</em>, cost on the ticket</h2>
+  <div class="demo-split">
+    <div class="demo-text r">
       <div class="card s"><h3><span style="color:var(--c);margin-right:8px">◧</span>Model per skill</h3><p>Configured in the skill itself</p></div>
       <div class="card t"><h3><span style="color:var(--c);margin-right:8px">$</span>Spend on the ticket</h3><p>Token report posted at task completion</p></div>
       <div class="card j"><h3><span style="color:var(--c);margin-right:8px">✓</span>No surprises</h3><p>Per-model breakdown and cost estimate</p></div>
-      <ul style="gap:6px;margin-top:4px">
-        <li style="font-size:clamp(12px,1.25vw,16px)"><b>Enterprises</b> see where the AI investment actually goes</li>
-        <li style="font-size:clamp(12px,1.25vw,16px)"><b>Teams</b> optimise their usage and tailor their own harness</li>
-        <li style="font-size:clamp(12px,1.25vw,16px)"><b>PMs</b> measure agent cost alongside delivery velocity</li>
+      <ul style="gap:6px">
+        <li><b>Enterprises</b> see where the AI investment actually goes</li>
+        <li><b>Teams</b> optimise their usage and tailor their own harness</li>
+        <li><b>PMs</b> measure agent cost alongside delivery velocity</li>
       </ul>
     </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/tokens.mp4" poster="assets/demo/tokens.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
@@ -666,24 +677,26 @@ the real report also has cache-read and cache-write columns</span></pre></div>
   <span class="kicker r">Where it fits</span>
   <h2 class="r" style="margin-bottom:14px">What others focus on, <em>what we add</em></h2>
   <div class="fit">
-    <div class="lane">
-      <span class="stage" style="grid-row:1;grid-column:2;--t:0.10s">ASSESS</span><span class="stage" style="grid-row:1;grid-column:3;--t:0.18s">SPECIFY</span><span class="stage" style="grid-row:1;grid-column:4;--t:0.26s">PLAN</span><span class="stage" style="grid-row:1;grid-column:5;--t:0.34s">BUILD</span><span class="stage" style="grid-row:1;grid-column:6;--t:0.42s">VERIFY</span><span class="stage" style="grid-row:1;grid-column:7;--t:0.50s">MERGE</span><span class="stage" style="grid-row:1;grid-column:8;--t:0.58s">COST</span>
+    <div class="lane" style="grid-template-columns:minmax(150px,210px) repeat(8,1fr)">
+      <span class="stage" style="grid-row:1;grid-column:2;--t:0.06s">ONBOARD</span><span class="stage" style="grid-row:1;grid-column:3;--t:0.12s">ASSESS</span><span class="stage" style="grid-row:1;grid-column:4;--t:0.18s">SPECIFY</span><span class="stage" style="grid-row:1;grid-column:5;--t:0.24s">PLAN</span><span class="stage" style="grid-row:1;grid-column:6;--t:0.30s">BUILD</span><span class="stage" style="grid-row:1;grid-column:7;--t:0.36s">VERIFY</span><span class="stage" style="grid-row:1;grid-column:8;--t:0.42s">MERGE</span><span class="stage" style="grid-row:1;grid-column:9;--t:0.48s">COST</span>
       <span class="who" style="grid-row:2;--t:.9s">Spec Kit · Kiro</span>
-      <span class="bar" style="grid-row:2;grid-column:3 / 5;--t:1s"></span>
-      <span class="cap" style="grid-row:3;grid-column:3 / 9;--t:1.5s">spec-first: requirements → plan → tasks · Kiro adds hooks on events</span>
+      <span class="bar" style="grid-row:2;grid-column:4 / 6;--t:1s"></span>
+      <span class="cap" style="grid-row:3;grid-column:4 / 10;--t:1.5s">spec-first: requirements → plan → tasks · Kiro adds hooks on events</span>
       <span class="who" style="grid-row:4;--t:2.1s">Superpowers · BMAD</span>
-      <span class="bar grey" style="grid-row:4;grid-column:3 / 7;--t:2.2s"></span>
-      <span class="cap" style="grid-row:5;grid-column:3 / 9;--t:2.8s">skills and role agents: spec → plan → TDD → review</span>
+      <span class="bar grey" style="grid-row:4;grid-column:4 / 8;--t:2.2s"></span>
+      <span class="cap" style="grid-row:5;grid-column:4 / 10;--t:2.8s">skills and role agents: spec → plan → TDD → review</span>
       <span class="who sh" style="grid-row:6;--t:3.4s">FIOH</span>
-      <span class="bar sh" style="grid-row:6;grid-column:2 / 9;--t:3.6s;--d:1.4s"></span>
+      <span class="bar sh" style="grid-row:6;grid-column:2 / 10;--t:3.6s;--d:1.4s"></span>
       <span class="brk" data-n="①" style="grid-row:7;grid-column:2 / 3;--t:5.2s"></span>
-      <span class="brk" data-n="②" style="grid-row:7;grid-column:4 / 8;--t:6.4s"></span>
-      <span class="brk" data-n="③" style="grid-row:7;grid-column:8 / 9;--t:7.6s"></span>
+      <span class="brk" data-n="②" style="grid-row:7;grid-column:3 / 4;--t:6.2s"></span>
+      <span class="brk" data-n="③" style="grid-row:7;grid-column:4 / 9;--t:7.2s"></span>
+      <span class="brk" data-n="④" style="grid-row:7;grid-column:9 / 10;--t:8.2s"></span>
     </div>
-    <div class="cards">
-      <div class="card t" style="--t:5.2s"><h3>① Scored first</h3><p>10 dimensions, with a score, band and blockers, before agents touch the repo</p></div>
-      <div class="card s" style="--t:6.4s"><h3>② Gates in your tracker</h3><p>Plan saved on the ticket, ACs checked against the diff at merge, CI green</p></div>
-      <div class="card j" style="--t:7.6s"><h3>③ Cost per step</h3><p>Model pinned per skill, spend posted on the ticket</p></div>
+    <div class="cards" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card a" style="--t:5.2s"><h3>① Onboarding built in</h3><p>Role onboarding for Dev, QA and BA, project onboarding from the assessment, and <code>/setup-workspace</code></p></div>
+      <div class="card t" style="--t:6.2s"><h3>② Scored first</h3><p>10 dimensions, with a score, band and blockers, before agents touch the repo</p></div>
+      <div class="card s" style="--t:7.2s"><h3>③ Wired to your tracker</h3><p><code>init</code> connects Jira and records it in the manifest. The BA agent guards the board; plan and AC verdicts land on the ticket</p></div>
+      <div class="card j" style="--t:8.2s"><h3>④ Cost per step</h3><p>Model pinned per skill, spend posted on the ticket</p></div>
     </div>
   </div>
 </section>
@@ -691,52 +704,79 @@ the real report also has cache-read and cache-write columns</span></pre></div>
 <!-- 18 · Practices -->
 <section data-p="m v" class="alt">
   <!-- Speaker notes
-       Say "we haven't seen this elsewhere", not "nobody does it".
-       The strip credits the common playbook (Anthropic's Claude Code best practices, the multi-agent research post, Superpowers):
-       explore → plan → code, precise subagent handoffs, a separate checker, cheap models for routine work, deterministic code for maths.
-       CLAUDE.md instructions are advisory; hooks are deterministic. That's why hooks are on the roadmap.
-       04 is the best one to tell as a story: the pin silently did nothing until steps were spawned with the model set, hence the planner/executor split.
+       These are practices teams already know. The point is why we built them into the tool instead of leaving them to discipline.
+       03 is a good story: the model pin in a skill did nothing until each step was spawned with the model set, hence the planner/executor split.
        Stories for Q&A:
-       - Text written before a tool call can appear after the tool's prompt, so the plan gate ends its turn on the plan itself.
        - Agents running in the background can't ask the human anything, so anything that may need a person runs in the foreground.
        - Subagents started explaining their own tools to the user; now there's a rule: never mention your runtime. -->
-  <span class="kicker r">Practices</span>
-  <h2 class="r" style="margin-bottom:16px">What we added <em>to the playbook</em></h2>
-  <div class="follow r"><span class="lbl">We follow</span><span>plan first · precise handoffs · checker ≠ maker · cheap models for routine · code does the maths</span></div>
-  <p class="newlbl r">What's new</p>
+  <span class="kicker r">Learnings</span>
+  <h2 class="r" style="margin-bottom:10px">Good practices, <em>built in</em></h2>
+  <p class="lead r" style="max-width:none;margin-bottom:12px">None of these are new. We put them in the tool because "remember to do it" didn't hold up once agents joined the team.</p>
   <ol class="steal">
     <li class="r"><span class="pn">01</span><div><h3>Assess before you delegate</h3><p>Score the repo first. Blockers cap the band; the score stays comparable.</p></div></li>
-    <li class="r"><span class="pn">02</span><div><h3>Your bar, written down and dated</h3><p><code>standards.md</code> holds your thresholds, flagged stale after 180 days.</p></div></li>
-    <li class="r"><span class="pn">03</span><div><h3>A passing test is a suspect</h3><p>Passes first time? Break the code. Still passes? The test is wrong.</p></div></li>
-    <li class="r"><span class="pn">04</span><div><h3>A model pin only works if you route it</h3><p>Read inline, a skill runs on the session model, so each step is spawned on its pin.</p></div></li>
+    <li class="r"><span class="pn">02</span><div><h3>A clear ticket comes first</h3><p>When the ticket is vague, people ask and agents guess. So every ticket goes through the same checklist before work starts.</p></div></li>
+    <li class="r"><span class="pn">03</span><div><h3>The right model for each job</h3><p>Commits and PRs don't need the biggest model. Each skill names its own, and the cost shows who used what.</p></div></li>
+    <li class="r"><span class="pn">04</span><div><h3>Small steps, checked as you go</h3><p>One acceptance criterion at a time, test first, small commits, CI green. Mistakes stay small and cheap.</p></div></li>
     <li class="r"><span class="pn">05</span><div><h3>Every gate leaves a trace on the ticket</h3><p>Approved plan, AC verdicts and token cost, where the team already looks.</p></div></li>
   </ol>
 </section>
 
-<!-- 19 · Q&A -->
+<!-- 19 · Resources -->
+<section data-p="m v">
+  <span class="kicker r">Resources</span>
+  <h2 class="r" style="margin-bottom:22px">Want to <em>go deeper?</em></h2>
+  <div class="res r">
+    <a class="res-card" href="https://www.thoughtworks.com/insights/blog/generative-ai/how-sensible-harness-help-teams-create-ai-first-delivery-environment" target="_blank" rel="noopener">
+      <img src="assets/video-poster.jpg" alt="">
+      <span class="src">Thoughtworks blog</span>
+      <h3>How Sensible Harness can help teams create an AI-first delivery environment</h3>
+      <span class="res-by">Amy Pellegrini · María José Lalama · Vitória Toebe</span>
+    </a>
+    <a class="res-card" href="https://www.youtube.com/watch?v=HuS4O5KhtWQ" target="_blank" rel="noopener">
+      <img src="assets/xconf-maintenance-delivery.jpg" alt="">
+      <span class="src">XConf Europe 2026 · talk</span>
+      <h3>AI-First Software Maintenance &amp; AI-First Software Delivery</h3>
+      <span class="res-by">Vitória Toebe · Amy Pellegrini</span>
+    </a>
+    <a class="res-card" href="https://www.youtube.com/watch?v=4EPDghNJcqQ" target="_blank" rel="noopener">
+      <img src="assets/xconf-clarity-first.jpg" alt="">
+      <span class="src">XConf Europe 2026 · talk</span>
+      <h3>Clarity-First Method: Vibe-coding products without tech debt</h3>
+      <span class="res-by">María José Lalama</span>
+    </a>
+  </div>
+</section>
+
+<!-- 20 · Q&A -->
 <section class="cover alt" data-p="m v">
-  <h1 class="r">Q&amp;A</h1>
-  <div class="grid g3 team" style="margin:0 auto;max-width:1020px">
+  <h1 class="r" style="margin-bottom:14px">Q&amp;A</h1>
+  <div class="qa-wrap">
+    <div class="grid g3 team" style="margin:0;max-width:none">
     <div class="person r">
-      <img src="assets/amy.jpg" alt="Amy Pellegrini" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <img src="assets/amy.jpg" alt="Amy Pellegrini" style="width:clamp(70px,7.5vw,104px);height:clamp(70px,7.5vw,104px);margin-bottom:8px">
       <h3>Amy Pellegrini</h3>
       <p>Lead Developer</p>
       <p class="area">AI-First Software Delivery</p>
-      <img src="assets/qrcode_amy.png" alt="QR code for Amy Pellegrini" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+      <a class="lin" href="https://www.linkedin.com/in/amypellegrini/" target="_blank" rel="noopener"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0a66c2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11.1 9.6h2.5v1.15h.04c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.1c0-.98-.02-2.24-1.36-2.24-1.37 0-1.58 1.07-1.58 2.17V18h-2.6z"/></svg><span>/amypellegrini</span></a>
     </div>
     <div class="person r">
-      <img src="assets/majo.jpg" alt="Maria Jose Lalama" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <img src="assets/majo.jpg" alt="Maria Jose Lalama" style="width:clamp(70px,7.5vw,104px);height:clamp(70px,7.5vw,104px);margin-bottom:8px">
       <h3>Maria Jose Lalama</h3>
       <p>Senior AI Product Researcher</p>
       <p class="area">AI/Works<sup>™</sup></p>
-      <img src="assets/qrcode_maria.png" alt="QR code for Maria Jose Lalama" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+      <a class="lin" href="https://www.linkedin.com/in/mariajoselalama/" target="_blank" rel="noopener"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0a66c2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11.1 9.6h2.5v1.15h.04c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.1c0-.98-.02-2.24-1.36-2.24-1.37 0-1.58 1.07-1.58 2.17V18h-2.6z"/></svg><span>/mariajoselalama</span></a>
     </div>
     <div class="person r">
-      <img src="assets/vitoria.jpg" alt="Vitória Toebe" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <img src="assets/vitoria.jpg" alt="Vitória Toebe" style="width:clamp(70px,7.5vw,104px);height:clamp(70px,7.5vw,104px);margin-bottom:8px">
       <h3>Vitória Toebe</h3>
       <p>Lead Developer</p>
       <p class="area">AI-First Software Maintenance</p>
-      <img src="assets/qrcode_vitoria.png" alt="QR code for Vitória Toebe" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+      <a class="lin" href="https://www.linkedin.com/in/vitoriatoebe/" target="_blank" rel="noopener"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0a66c2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11.1 9.6h2.5v1.15h.04c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.1c0-.98-.02-2.24-1.36-2.24-1.37 0-1.58 1.07-1.58 2.17V18h-2.6z"/></svg><span>/vitoriatoebe</span></a>
+    </div>
+    </div>
+    <div class="feedback r">
+      <div class="qr-slot" id="feedback-qr" aria-label="QR code for the feedback form">QR<br>coming soon</div>
+      <div><h3>How did we do?</h3><p>Scan to tell us what worked, what didn't, and what you'd like to see next.</p></div>
     </div>
   </div>
 </section>
@@ -783,7 +823,7 @@ the real report also has cache-read and cache-write columns</span></pre></div>
     const v = e.target;
     if (e.isIntersecting) { v.currentTime = 0; v.play().catch(() => {}); } else v.pause();
   }), { root: deck, threshold: .6 });
-  demoVids.forEach(v => { vio.observe(v); v.addEventListener('click', () => v.paused ? v.play() : v.pause()); });
+  demoVids.forEach(v => vio.observe(v));
   const slideVid = () => slides[current()].querySelector('video[data-demo]');
   addEventListener('keydown', e => {
     const v = slideVid(); if (!v) return;
