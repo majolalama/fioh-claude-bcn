@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gates the agents can't skip</title>
-<meta name="description" content="Sensible Harness: a CLI harness that turns an existing repo into a governed environment for AI delivery with Claude Code. Claude Community, Barcelona.">
+<meta name="description" content="FIOH: a CLI harness that turns an existing repo into a governed environment for AI delivery with Claude Code. Claude Community, Barcelona.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -333,6 +333,51 @@
     .abars div { grid-template-columns: minmax(0, 140px) 1fr 30px 36px; } .tbl { font-size: 12px; display: block; overflow-x: auto; } .tbl td:first-child { white-space: normal; }
   }
   @media print { .fan .kids { grid-template-columns: repeat(6, 1fr) !important; } .qa2 { grid-template-columns: 1fr 1fr !important; } }
+
+  /* Demo slides: text left, recorded run right */
+  .demo-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 34px; align-items: center; max-width: 1260px; width: 100%; }
+  .demo-text { display: grid; gap: 11px; align-content: center; min-width: 0; }
+  .demo-text .card { padding: 11px 16px; } .demo-text .card p, .demo-text .card li { font-size: clamp(12px, 1.3vw, 16px); }
+  .demo-text .flow { gap: 6px; } .demo-text .flow .step { padding: 6px 10px; font-size: clamp(12px, 1.25vw, 16px); }
+  .demo-text .term pre { padding: 10px 14px; font-size: clamp(11px, 1.2vw, 15px); line-height: 1.5; } .demo-text .card h3 { margin-bottom: 6px; }
+  .demo-text li { font-size: clamp(14px, 1.5vw, 19px); }
+  .demo-note { margin: 0; color: var(--text-dim); font-size: clamp(13px, 1.35vw, 17px); }
+  .demo-vid { margin: 0; min-width: 0; }
+  .demo-vid video { display: block; width: 100%; max-height: 62vh; object-fit: contain; background: #0f1e2a; cursor: pointer;
+    border-radius: 12px; border: 1px solid rgba(159,186,196,.3); box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+  .demo-vid figcaption { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px;
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .kids-mini { display: grid; gap: 8px; font-family: var(--mono); font-size: clamp(12px, 1.3vw, 16px); color: var(--mist); }
+  .kids-mini > span { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(159,186,196,.22); border-radius: 10px; padding: 7px 12px; }
+  .demo-split.wide { grid-template-columns: minmax(0, .8fr) minmax(0, 1.5fr); }
+  .learn { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 1200px; }
+  .learn .card { padding: 12px 16px; display: grid; gap: 4px; align-content: start; }
+  .learn .pn { font-family: var(--mono); font-size: clamp(11px, 1.1vw, 14px); color: var(--turmeric); }
+  .learn h3 { font-size: clamp(14px, 1.45vw, 18px); margin: 0; }
+  .learn p { font-size: clamp(11.5px, 1.2vw, 15px); margin: 0; color: var(--text-dim); }
+  @media (max-width: 900px) { .learn { grid-template-columns: 1fr 1fr; } }
+  /* Resources + Q&A */
+  .res { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1180px; }
+  .res-card { display: grid; gap: 8px; align-content: start; text-decoration: none; color: inherit; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(159,186,196,.22); border-radius: 14px; padding: 12px 12px 16px; transition: border-color .2s; }
+  .res-card:hover { border-color: var(--turmeric); }
+  .res-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; display: block; }
+  .res-card .src { font-family: var(--mono); font-size: clamp(10px, 1vw, 12px); letter-spacing: .1em; text-transform: uppercase; color: var(--turmeric); }
+  .res-card h3 { font-size: clamp(14px, 1.5vw, 19px); line-height: 1.3; margin: 0; color: #fff; }
+  .res-card .res-by { font-size: clamp(11px, 1.1vw, 14px); color: var(--text-dim); }
+  .qa-wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 30px; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .lin { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; font-family: var(--mono); font-size: clamp(12px, 1.2vw, 15px); color: var(--mist); text-decoration: none; }
+  .lin .li { width: 20px; height: 20px; flex: none; }
+  .feedback { display: grid; justify-items: center; gap: 12px; text-align: center; max-width: 250px; padding: 18px; border-radius: 14px;
+    border: 1px solid var(--turmeric); background: rgba(204,133,11,.08); }
+  .feedback h3 { margin: 0 0 4px; color: #fff; } .feedback p { margin: 0; font-size: clamp(12px, 1.2vw, 15px); color: var(--text-dim); }
+  .qr-slot { width: clamp(120px, 13vw, 170px); aspect-ratio: 1; display: grid; place-items: center; border-radius: 10px; background: #fff; color: #555;
+    font-family: var(--mono); font-size: 12px; line-height: 1.4; }
+  .qr-slot img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+  @media (max-width: 900px) { .res, .qa-wrap { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .demo-split { grid-template-columns: 1fr; } }
+  @media print { .demo-split { grid-template-columns: minmax(0,1fr) minmax(0,1.08fr) !important; } }
 </style>
 </head>
 <body>
@@ -393,23 +438,8 @@
   <p class="lead r" style="margin:28px 0 0;max-width:none"><b style="color:#fff">Scale AI adoption</b> without scaling the chaos.</p>
 </section>
 
-<!-- 05 · The model -->
-<section data-p="m" class="alt">
-  <span class="kicker r">The harness</span>
-  <h2 class="r">Guardrails, sensors, <em>and a meter</em></h2>
-  <div class="grid g3" style="grid-template-columns:1fr 1fr 1fr">
-    <div class="card j r"><h3>Guardrails</h3><p>Steer the agent <b style="color:#fff">before</b> it acts</p>
-      <ul><li><code>AGENTS.md</code> behaviour rules</li><li><code>standards.md</code>: your bar, dated</li><li>Issue checklist · plan approval</li></ul></div>
-    <div class="card a r"><h3>Agents &amp; skills</h3><p>Do the work, one step at a time</p>
-      <ul><li>Planner subagent, main-agent executor</li><li>One spawn per step</li><li>Model pinned per skill</li></ul></div>
-    <div class="card f r"><h3>Sensors</h3><p>Verify what it built <b style="color:#fff">after</b> it acts</p>
-      <ul><li>TDD that checks its own test</li><li>CI · AC verification · QA</li><li>10-dimension assessment</li></ul></div>
-  </div>
-  <div class="card t r" style="max-width:1150px;margin-top:16px"><h3 style="margin:0">Tokens, across all three</h3><p>Every step metered and the cost posted on the ticket, so everyone sees what delivery cost.</p></div>
-</section>
-
-<!-- 06 · Sensible Defaults -->
-<section data-p="m">
+<!-- 05 · Sensible Defaults -->
+<section data-p="v">
   <span class="kicker r">The foundations</span>
   <h2 class="r">Delivery practices <em>we already trust</em></h2>
   <p class="lead r">The agent follows them; it doesn't replace them.</p>
@@ -423,145 +453,128 @@
   </div>
 </section>
 
-<!-- 07 · What init writes -->
+<!-- 06 · What it delivers -->
 <section data-p="v" class="tight">
-  <span class="kicker demo r">Demo · setup</span>
-  <h2 class="r" style="margin-bottom:14px">What <code>init</code> <em>writes</em></h2>
-  <div class="flow r" style="margin-bottom:18px">
-    <span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span>
-    <span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span>
-    <span class="step"><b>Agents</b> BA · Dev · QA</span>
-  </div>
-  <div class="split r" style="max-width:1150px">
-    <div class="term sm"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">.claude/skills/tdd/SKILL.md</span></div><pre><span class="c">---</span>
-<span class="p">name:</span> tdd
-<span class="p">description:</span> Use whenever the user asks
-  to run one TDD cycle for a single
-  acceptance criterion…
-<span class="p">model:</span> <span class="y">sonnet</span>
-<span class="c">---</span>
-<span class="m">## Step 2</span> failing test (red)
-<span class="m">## Step 3</span> make it pass (green)
-<span class="m">## Step 4</span> refactor (while green)
-<span class="m">## Step 5</span> stop: green, <b>uncommitted</b></pre></div>
-    <div style="display:grid;gap:14px;align-content:start">
-      <div class="card j"><h3><span class="pill haiku">haiku</span> 15 skills · mechanical</h3><p>commit · commit-and-push · open-pr · check-ci · pickup-issue · jira · track-tokens · the agent facades · onboarding</p></div>
-      <div class="card s"><h3><span class="pill sonnet">sonnet</span> 19 skills · judgement</h3><p>tdd · close-issue · address-pr-comments · qa-test · the 14 <code>assess-*</code> skills · explain-assessment</p></div>
-      <p style="margin:0;color:var(--text-dim);font-size:clamp(13px,1.35vw,17px)">The <code>description</code> is the trigger. One job per skill, so each one can run alone, be chained, or be handed to an agent.</p>
+  <span class="kicker demo r">Demo 1 · Setup</span>
+  <h2 class="r" style="margin-bottom:18px">What it <em>delivers</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="flow"><span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span><span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span><span class="step"><b>Agents</b> BA · Dev · QA</span></div>
+      <div class="card j"><h3><span class="pill haiku">haiku</span> 15 skills · mechanical</h3><p>commit · open-pr · check-ci · pickup-issue · jira · track-tokens · onboarding</p></div>
+      <div class="card s"><h3><span class="pill sonnet">sonnet</span> 19 skills · judgement</h3><p>tdd · close-issue · address-pr-comments · qa-test · the <code>assess-*</code> skills</p></div>
+      <p class="demo-note">The <code>description</code> is the trigger and <code>model:</code> pins the model. One job per skill, so each one can run alone, be chained, or be handed to an agent.</p>
     </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/setup.mp4" poster="assets/demo/setup.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
-<!-- 08 · Pick your role -->
-<section data-p="v">
-  <span class="kicker r">Tool onboarding</span>
-  <h2 class="r">Pick your <em>role</em></h2>
-  <div class="grid g3">
-    <div class="card j r"><span class="big">DEV</span><h3><code>/onboard-dev</code></h3><p>Dev agent and the delivery skills: pickup, tdd, commit, PR, CI, close</p></div>
-    <div class="card a r"><span class="big">QA</span><h3><code>/onboard-qa</code></h3><p>QA agent and assessments: pyramid, CI, pre-commit, qa-test</p></div>
-    <div class="card t r"><span class="big">BA</span><h3><code>/onboard-ba</code></h3><p>BA agent and how issues flow into delivery</p></div>
-  </div>
-  <p class="lead r" style="margin-top:26px">Each ends with: run <code>/assess-repo</code></p>
-</section>
-
-<!-- 09 · Assessment -->
-<section data-p="v" class="alt">
-  <span class="kicker demo r">Demo 03 Assess</span>
-  <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">Before going AI-first, <em>know your repo</em></h2>
-  <p class="lead r" style="max-width:none;font-size:clamp(16px,1.8vw,22px);margin-bottom:6px"><code>/assess-repo</code> scores it across 10 dimensions, so you know how much you can trust agents on it</p>
-  <p class="r" style="margin:0 0 20px;color:var(--text-dim);font-family:var(--mono);font-size:clamp(12px,1.3vw,16px)">Your standards first. Thoughtworks defaults only where you have none.</p>
-  <div class="row r" style="gap:28px">
-  <div class="bars" style="flex:1 1 600px;font-size:clamp(12px,1.35vw,16px)">
-    <div><span>Architecture</span><span class="b" style="--c:var(--jade);--w:85%"></span></div>
-    <div><span>Dependency Health</span><span class="b" style="--c:var(--jade);--w:78%"></span></div>
-    <div><span>Code Quality Infrastructure</span><span class="b" style="--c:var(--sapphire);--w:72%"></span></div>
-    <div><span>Documentation</span><span class="b" style="--c:var(--sapphire);--w:64%"></span></div>
-    <div><span>CI/CD &amp; Delivery Conventions</span><span class="b" style="--c:var(--turmeric);--w:58%"></span></div>
-    <div><span>Test Quality</span><span class="b" style="--c:var(--turmeric);--w:55%"></span></div>
-    <div><span>Developer Experience</span><span class="b" style="--c:var(--turmeric);--w:52%"></span></div>
-    <div><span>Observability</span><span class="b" style="--c:var(--flamingo);--w:35%"></span></div>
-    <div><span>AI Governance</span><span class="b" style="--c:var(--flamingo);--w:30%"></span></div>
-    <div><span>Security Baseline</span><span class="b" style="--c:var(--flamingo);--w:20%"></span></div>
-  </div>
-  <div style="flex:0 1 300px;display:grid;gap:14px">
-    <div class="card s"><h3>Dashboard</h3><p>Score, band and blockers on one page</p></div>
-    <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
-  </div>
-  </div>
-  <p class="lead r" style="margin:22px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">Gaps become tickets, the team delivers them, and the next assessment shows <b style="color:#fff">how things have changed</b> since this one</p>
-</section>
-
-<!-- 10 · Onboarding -->
-<section data-p="v">
-  <span class="kicker demo r">Demo 03 Onboard</span>
-  <h2 class="r" style="font-size:clamp(28px,4vw,50px)">The assessment writes the <em>onboarding</em></h2>
-  <p class="lead r" style="max-width:none">Generated from this repo’s own analysis. Not a template.</p>
-  <div class="grid g2">
-    <div class="card t r"><h3><code>/onboard-me</code></h3><p>Understand the repo</p>
-      <ul><li>Architecture and where things live</li><li>How to test and ship a change</li><li>Known traps the assessment found</li><li>What agents must not do alone</li></ul></div>
-    <div class="card j r"><h3><code>/setup-workspace</code></h3><p>Get it running</p>
-      <ul><li>Prerequisites, checked in order</li><li>Install, database, each service</li><li>Verify the whole environment</li><li>Asks before changing your machine</li></ul></div>
-  </div>
-  <p class="lead r" style="margin:26px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">A faster start for every new teammate, with the same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits</p>
-</section>
-
-<!-- 11 · BA agent -->
+<!-- 07 · Pick your role -->
 <section data-p="m">
-  <span class="kicker sec-g r">Requirements into tickets</span>
-  <h2 class="r" style="margin-bottom:20px">The BA agent <em>guards the ticket</em></h2>
-  <div class="row r" style="align-items:flex-start;gap:30px;max-width:1150px">
-    <div style="flex:1 1 560px"><img class="shot" src="assets/still-ba.jpg" alt="BA agent drafts GV-94 against the mandatory checklist and creates it on the Jira board"><p class="shot-cap">From the video · chapter 03</p></div>
-    <ul style="flex:1 1 360px;gap:14px">
-      <li style="font-size:clamp(15px,1.7vw,21px)"><b>Mandatory checklist</b>: Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
-      <li style="font-size:clamp(15px,1.7vw,21px)">Asks with <code>AskUserQuestion</code> when scope is unclear</li>
-      <li style="font-size:clamp(15px,1.7vw,21px)">Jira through <code>acli</code>, using the <code>jira</code> skill's commands, <b>never from memory</b></li>
-      <li style="font-size:clamp(15px,1.7vw,21px)">Assessment gaps arrive with their questions as Context</li>
-    </ul>
-  </div>
-</section>
-
-<!-- 12 · Dev plan -->
-<section data-p="v">
-  <span class="kicker demo r">Demo 05 Dev plan</span>
-  <h2 class="r">Dev agent: <em>plan first</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step"><code>/dev GV-n</code></span><span class="arrow">▸</span>
-    <span class="step">Ticket check</span><span class="arrow">▸</span>
-    <span class="step">Branch</span><span class="arrow">▸</span>
-    <span class="step">Plan</span><span class="arrow">▸</span>
-    <span class="step" style="border-color:var(--turmeric)">👤 Approve</span><span class="arrow">▸</span>
-    <span class="step">Saved to ticket</span>
-  </div>
-  <ul>
-    <li class="r">One plan step per acceptance criterion</li>
-    <li class="r">One round of changes before approval</li>
-  </ul>
-</section>
-
-<!-- 13 · Fan-out -->
-<section data-p="v" class="alt">
-  <span class="kicker demo r">Demo · execution</span>
-  <h2 class="r" style="margin-bottom:22px">One spawn, <em>one model, per step</em></h2>
-  <div class="fan r">
-    <div class="root"><b>Main agent</b><small>session model · executes the approved plan</small></div>
-    <div class="lines"></div>
-    <div class="kids">
-      <div class="kid"><b>tdd</b><span class="pill sonnet">sonnet</span><span class="w">AC1 red → green</span></div>
-      <div class="kid"><b>commit</b><span class="pill haiku">haiku</span><span class="w">feat(events): seed dinner</span></div>
-      <div class="kid"><b>tdd</b><span class="pill sonnet">sonnet</span><span class="w">AC2 red → green</span></div>
-      <div class="kid"><b>commit</b><span class="pill haiku">haiku</span><span class="w">feat(rsvp): guest RSVP</span></div>
-      <div class="kid"><b>open-pr</b><span class="pill haiku">haiku</span><span class="w">PR #142 → main</span></div>
-      <div class="kid"><b>check-ci</b><span class="pill haiku">haiku</span><span class="w">✔ green</span></div>
+  <span class="kicker demo r">Demo 2 · Tool onboarding</span>
+  <h2 class="r" style="margin-bottom:18px">Pick your <em>role</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="card j"><h3><span class="pill sonnet">DEV</span> <code>/onboard-dev</code></h3><p>Dev agent and the delivery skills: pickup, tdd, commit, PR, CI, close</p></div>
+      <div class="card a"><h3><span class="pill sonnet">QA</span> <code>/onboard-qa</code></h3><p>QA agent and assessments: pyramid, CI, pre-commit, qa-test</p></div>
+      <div class="card t"><h3><span class="pill sonnet">BA</span> <code>/onboard-ba</code></h3><p>BA agent and how issues flow into delivery</p></div>
+      <p class="demo-note">Each one ends with: run <code>/assess-repo</code></p>
     </div>
-  </div>
-  <div class="term sm r" style="margin-top:20px;max-width:1150px"><pre><span class="c"># every spawn gets the same prompt shape; nothing improvised</span>
-Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span> and follow it exactly. Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span>.</pre></div>
-  <div class="flow guards r" style="margin-top:14px">
-    <span class="step">Full test suite between <code>tdd</code> steps</span><span class="step">Stop and ask on any failure</span><span class="step">Never re-scope the plan: replan with the human</span>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/onboard-ba.mp4" poster="assets/demo/onboard-ba.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
-<!-- 14 · Five gates -->
+<!-- 08 · Assessment -->
+<section data-p="v" class="alt">
+  <span class="kicker demo r">Demo 3 · Assess</span>
+  <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">Before going AI-first, <em>know your repo</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <p class="lead" style="margin:0"><code>/assess-repo</code> scores the repo across <b style="color:#fff">10 dimensions</b>, so you know how much you can trust agents on it</p>
+      <p class="demo-note" style="font-family:var(--mono)">Your standards first. Thoughtworks defaults only where you have none.</p>
+      <div class="card s"><h3>Dashboard</h3><p>Score, band and blockers on one page. Blockers cap the band.</p></div>
+      <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
+      <p class="demo-note">Gaps become tickets, and the next assessment shows <b style="color:#fff">how things have changed</b>.</p>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/assess.mp4" poster="assets/demo/assess.jpg" muted playsinline loop controls preload="auto"></video></figure>
+  </div>
+</section>
+
+<!-- 09 · Onboarding -->
+<section data-p="m">
+  <span class="kicker demo r">Demo 4 · Onboard</span>
+  <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">The assessment writes the <em>onboarding</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <p class="lead" style="margin:0">Generated from this repo’s own analysis. Not a template.</p>
+      <div class="card t"><h3><code>/onboard-me</code> · understand the repo</h3><p>Architecture, how to test and ship, known traps, what agents must not do alone</p></div>
+      <div class="card j"><h3><code>/setup-workspace</code> · get it running</h3><p>Prerequisites in order, install each service, verify, ask before changing your machine</p></div>
+      <p class="demo-note">Same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits.</p>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/onboard.mp4" poster="assets/demo/onboard.jpg" muted playsinline loop controls preload="auto"></video></figure>
+  </div>
+</section>
+
+<!-- 10 · BA agent -->
+<section data-p="m">
+  <span class="kicker demo r">Demo 5 · BA agent</span>
+  <h2 class="r" style="margin-bottom:18px">The BA agent <em>guards the ticket</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <ul style="gap:14px">
+        <li><b>Mandatory checklist</b>: Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
+        <li>Asks with <code>AskUserQuestion</code> when scope is unclear</li>
+        <li>Jira through <code>acli</code>, using the <code>jira</code> skill's commands, <b>never from memory</b></li>
+        <li>Assessment gaps arrive with their questions as Context</li>
+      </ul>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/ba.mp4" poster="assets/demo/ba.jpg" muted playsinline loop controls preload="auto"></video></figure>
+  </div>
+</section>
+
+<!-- 11 · Dev plan -->
+<section data-p="v">
+  <span class="kicker demo r">Demo 6 · Dev plan</span>
+  <h2 class="r" style="margin-bottom:18px">Dev agent: <em>plan first</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="flow"><span class="step"><code>/dev GV-n</code></span><span class="arrow">▸</span><span class="step">Ticket check</span><span class="arrow">▸</span><span class="step">Branch</span><span class="arrow">▸</span><span class="step">Plan</span><span class="arrow">▸</span><span class="step" style="border-color:var(--turmeric)">👤 Approve</span><span class="arrow">▸</span><span class="step">Saved to ticket</span></div>
+      <ul>
+        <li>One plan step per acceptance criterion</li>
+        <li>One round of changes before approval</li>
+        <li>Nothing runs until a person approves the plan</li>
+      </ul>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/dev-plan.mp4" poster="assets/demo/dev-plan.jpg" muted playsinline loop controls preload="auto"></video></figure>
+  </div>
+</section>
+
+<!-- 12 · Fan-out -->
+<section data-p="v" class="alt">
+  <span class="kicker demo r">Demo 7 · Execution</span>
+  <h2 class="r" style="margin-bottom:18px">One spawn, <em>one model, per step</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="kids-mini">
+        <span><b>tdd</b> <span class="pill sonnet">sonnet</span> AC1 red → green</span>
+        <span><b>commit</b> <span class="pill haiku">haiku</span> feat(events): seed dinner</span>
+        <span><b>tdd</b> <span class="pill sonnet">sonnet</span> AC2 red → green</span>
+        <span><b>open-pr</b> · <b>check-ci</b> <span class="pill haiku">haiku</span></span>
+      </div>
+      <div class="term sm"><pre><span class="c"># same prompt shape for every spawn</span>
+Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span>
+and follow it exactly.
+Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
+      <ul>
+        <li>Full test suite between <code>tdd</code> steps</li>
+        <li>Stop and ask on any failure</li>
+        <li>Never re-scope the plan: replan with the human</li>
+      </ul>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/execution.mp4" poster="assets/demo/execution.jpg" muted playsinline loop controls preload="auto"></video></figure>
+  </div>
+</section>
+
+<!-- 13 · Five gates -->
 <section data-p="v">
   <span class="kicker sec-s r">Sensors</span>
   <h2 class="r" style="margin-bottom:10px">Five places the agent <em>has to stop</em></h2>
@@ -574,7 +587,7 @@ Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span> and follow it 
     <span class="chk" style="left:10%"></span><span class="chk" style="left:30%"></span><span class="chk" style="left:50%"></span><span class="chk" style="left:70%"></span><span class="chk" style="left:90%"></span>
   </div>
   <div class="gates5 r">
-    <div class="card"><span class="n">01</span><p class="if">If the ticket is thin</p><p class="then">→ it won't start</p><span class="who">👤 BA / human</span></div>
+    <div class="card"><span class="n">01</span><p class="if">If the ticket is incomplete</p><p class="then">→ it won't start</p><span class="who">👤 BA / human</span></div>
     <div class="card"><span class="n">02</span><p class="if">If there's no approved plan</p><p class="then">→ it won't write code</p><span class="who">👤 human</span></div>
     <div class="card self"><span class="n">03</span><p class="if">If the test passes the first time</p><p class="then">→ it breaks the code to prove the test works</p><span class="who">🤖 self-check</span></div>
     <div class="card"><span class="n">04</span><p class="if">If an AC isn't covered</p><p class="then">→ it won't merge</p><span class="who">👤 human</span></div>
@@ -583,51 +596,39 @@ Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span> and follow it 
   <div class="gstrip r">🔒 <b style="color:#fff">Hard boundary:</b> the dev-plan and QA agents can't edit code.</div>
 </section>
 
-<!-- 15 · QA + close-issue -->
+<!-- 14 · QA + close-issue -->
 <section data-p="v" class="tight">
-  <span class="kicker demo r">Demo · verification</span>
-  <h2 class="r" style="margin-bottom:20px">QA verifies. <em><code>close-issue</code></em></h2>
-  <div class="row r" style="align-items:flex-start;gap:28px;max-width:1180px">
-    <div style="flex:1 1 560px"><img class="shot" src="assets/still-qa.jpg" alt="QA agent test plan for GV-94: five scenarios across two ACs, all passing, recommendation close"><p class="shot-cap">From the video · chapter 05</p></div>
-    <div style="flex:1 1 360px;display:grid;gap:12px">
+  <span class="kicker demo r">Demo 8 · Verification</span>
+  <h2 class="r" style="margin-bottom:18px">QA verifies. <em><code>close-issue</code></em></h2>
+  <div class="demo-split wide">
+    <div class="demo-text r">
       <div class="card a"><h3><code>qa-test</code></h3><ul><li>Test plan from the ACs: happy path, edge, negative</li><li>Runs the feature; verdict to issue + PR</li><li>Recommends fixes, never applies them</li></ul></div>
-      <div class="card f"><h3><code>close-issue</code></h3><ul><li>Pass/fail per AC against the diff</li><li>Any AC unverified → <b style="color:#fff">no merge</b></li><li>CI failing → <b style="color:#fff">no merge</b></li><li>Squash-merge, then post token spend</li></ul></div>
+      <div class="card f"><h3><code>close-issue</code></h3><ul><li>Pass/fail per AC against the diff</li><li>Any AC unverified or CI failing → <b style="color:#fff">no merge</b></li><li>Squash-merge, then post token spend</li></ul></div>
     </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/qa.mp4" poster="assets/demo/qa.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
-<!-- 16 · Tokens -->
+<!-- 15 · Tokens -->
 <section data-p="m" class="tight">
-  <span class="kicker sec-t r">Tokens</span>
-  <h2 class="r" style="margin-bottom:8px">Every step <em>metered</em>, cost on the ticket</h2>
-  <p class="lead r" style="max-width:none;margin-bottom:14px">Tracks token consumption on every agent run.</p>
-  <div class="row r" style="align-items:flex-start;gap:26px;max-width:1180px">
-    <div class="term sm" style="flex:1 1 600px"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">comment on GV-94 · track-tokens</span></div><pre><span class="c">task                    model      input   output</span>
-tdd · AC1               <span class="p">sonnet</span>    41,208    6,114
-commit                  <span class="ok">haiku</span>      3,902      412
-tdd · AC2               <span class="p">sonnet</span>    38,771    5,630
-commit·open-pr·check-ci <span class="ok">haiku</span>     11,540    1,207
-<span class="c">────────────────────────────────────────────────</span>
-<span class="c">model        input    output     est. cost</span>
-<span class="p">sonnet</span>      79,979    11,744         <span class="y">$0.42</span>
-<span class="ok">haiku</span>       15,442     1,619         <span class="y">$0.02</span>
-<b>total</b>                                 <span class="y"><b>$0.44</b></span>
-<span class="c">illustrative · list prices: sonnet $3/$15, haiku $1/$5 per MTok
-the real report also has cache-read and cache-write columns</span></pre></div>
-    <div style="flex:1 1 360px;display:grid;gap:10px">
+  <span class="kicker demo r">Demo 9 · Tokens</span>
+  <h2 class="r" style="margin-bottom:18px">Every step <em>metered</em>, cost on the ticket</h2>
+  <div class="demo-split">
+    <div class="demo-text r">
       <div class="card s"><h3><span style="color:var(--c);margin-right:8px">◧</span>Model per skill</h3><p>Configured in the skill itself</p></div>
       <div class="card t"><h3><span style="color:var(--c);margin-right:8px">$</span>Spend on the ticket</h3><p>Token report posted at task completion</p></div>
       <div class="card j"><h3><span style="color:var(--c);margin-right:8px">✓</span>No surprises</h3><p>Per-model breakdown and cost estimate</p></div>
-      <ul style="gap:6px;margin-top:4px">
-        <li style="font-size:clamp(12px,1.25vw,16px)"><b>Enterprises</b> see where the AI investment actually goes</li>
-        <li style="font-size:clamp(12px,1.25vw,16px)"><b>Teams</b> optimise their usage and tailor their own harness</li>
-        <li style="font-size:clamp(12px,1.25vw,16px)"><b>PMs</b> measure agent cost alongside delivery velocity</li>
+      <ul style="gap:6px">
+        <li><b>Enterprises</b> see where the AI investment actually goes</li>
+        <li><b>Teams</b> optimise their usage and tailor their own harness</li>
+        <li><b>PMs</b> measure agent cost alongside delivery velocity</li>
       </ul>
     </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/tokens.mp4" poster="assets/demo/tokens.jpg" muted playsinline loop controls preload="auto"></video></figure>
   </div>
 </section>
 
-<!-- 17 · Maintenance -->
+<!-- 16 · Maintenance -->
 <section data-p="v">
   <span class="kicker r">Maintenance · in progress</span>
   <h2 class="r" style="margin-bottom:12px">AI-first software <em>maintenance</em></h2>
@@ -677,82 +678,118 @@ the real report also has cache-read and cache-write columns</span></pre></div>
   </div>
 </section>
 
-<!-- 18 · Where it fits -->
+<!-- 17 · Where it fits -->
 <section data-p="m v" class="tight">
   <span class="kicker r">Where it fits</span>
   <h2 class="r" style="margin-bottom:14px">What others focus on, <em>what we add</em></h2>
   <div class="fit">
-    <div class="lane">
-      <span class="stage" style="grid-row:1;grid-column:2;--t:0.10s">ASSESS</span><span class="stage" style="grid-row:1;grid-column:3;--t:0.18s">SPECIFY</span><span class="stage" style="grid-row:1;grid-column:4;--t:0.26s">PLAN</span><span class="stage" style="grid-row:1;grid-column:5;--t:0.34s">BUILD</span><span class="stage" style="grid-row:1;grid-column:6;--t:0.42s">VERIFY</span><span class="stage" style="grid-row:1;grid-column:7;--t:0.50s">MERGE</span><span class="stage" style="grid-row:1;grid-column:8;--t:0.58s">COST</span>
+    <div class="lane" style="grid-template-columns:minmax(140px,190px) repeat(9,1fr)">
+      <span class="stage" style="grid-row:1;grid-column:2;--t:0.05s">SETUP</span><span class="stage" style="grid-row:1;grid-column:3;--t:0.10s">ASSESS</span><span class="stage" style="grid-row:1;grid-column:4;--t:0.15s">ONBOARD</span><span class="stage" style="grid-row:1;grid-column:5;--t:0.20s">SPECIFY</span><span class="stage" style="grid-row:1;grid-column:6;--t:0.25s">PLAN</span><span class="stage" style="grid-row:1;grid-column:7;--t:0.30s">BUILD</span><span class="stage" style="grid-row:1;grid-column:8;--t:0.35s">VERIFY</span><span class="stage" style="grid-row:1;grid-column:9;--t:0.40s">MERGE</span><span class="stage" style="grid-row:1;grid-column:10;--t:0.45s">COST</span>
       <span class="who" style="grid-row:2;--t:.9s">Spec Kit · Kiro</span>
-      <span class="bar" style="grid-row:2;grid-column:3 / 5;--t:1s"></span>
-      <span class="cap" style="grid-row:3;grid-column:3 / 9;--t:1.5s">spec-first: requirements → plan → tasks · Kiro adds hooks on events</span>
+      <span class="bar" style="grid-row:2;grid-column:5 / 7;--t:1s"></span>
+      <span class="cap" style="grid-row:3;grid-column:5 / 11;--t:1.5s">spec-first: requirements → plan → tasks · Kiro adds hooks on events</span>
       <span class="who" style="grid-row:4;--t:2.1s">Superpowers · BMAD</span>
-      <span class="bar grey" style="grid-row:4;grid-column:3 / 7;--t:2.2s"></span>
-      <span class="cap" style="grid-row:5;grid-column:3 / 9;--t:2.8s">skills and role agents: spec → plan → TDD → review</span>
+      <span class="bar grey" style="grid-row:4;grid-column:5 / 9;--t:2.2s"></span>
+      <span class="cap" style="grid-row:5;grid-column:5 / 11;--t:2.8s">skills and role agents: spec → plan → TDD → review</span>
       <span class="who sh" style="grid-row:6;--t:3.4s">FIOH</span>
-      <span class="bar sh" style="grid-row:6;grid-column:2 / 9;--t:3.6s;--d:1.4s"></span>
+      <span class="bar sh" style="grid-row:6;grid-column:2 / 11;--t:3.6s;--d:1.4s"></span>
       <span class="brk" data-n="①" style="grid-row:7;grid-column:2 / 3;--t:5.2s"></span>
-      <span class="brk" data-n="②" style="grid-row:7;grid-column:4 / 8;--t:6.4s"></span>
-      <span class="brk" data-n="③" style="grid-row:7;grid-column:8 / 9;--t:7.6s"></span>
+      <span class="brk" data-n="②" style="grid-row:7;grid-column:3 / 4;--t:6.0s"></span>
+      <span class="brk" data-n="③" style="grid-row:7;grid-column:4 / 5;--t:6.8s"></span>
+      <span class="brk" data-n="④" style="grid-row:7;grid-column:5 / 10;--t:7.6s"></span>
+      <span class="brk" data-n="⑤" style="grid-row:7;grid-column:10 / 11;--t:8.4s"></span>
     </div>
-    <div class="cards">
-      <div class="card t" style="--t:5.2s"><h3>① Scored first</h3><p>10 dimensions, with a score, band and blockers, before agents touch the repo</p></div>
-      <div class="card s" style="--t:6.4s"><h3>② Gates in your tracker</h3><p>Plan saved on the ticket, ACs checked against the diff at merge, CI green</p></div>
-      <div class="card j" style="--t:7.6s"><h3>③ Cost per step</h3><p>Model pinned per skill, spend posted on the ticket</p></div>
+    <div class="cards" style="grid-template-columns:repeat(5,1fr)">
+      <div class="card s" style="--t:5.2s"><h3>① CLI connection</h3><p>One <code>init</code> wires your agent platform and issue tracker, recorded in the manifest</p></div>
+      <div class="card t" style="--t:6.0s"><h3>② Assessment</h3><p>10 dimensions, score, band and blockers before agents touch the repo</p></div>
+      <div class="card a" style="--t:6.8s"><h3>③ Onboarding &amp; setup</h3><p>Role onboarding, project onboarding from the assessment, <code>/setup-workspace</code></p></div>
+      <div class="card f" style="--t:7.6s"><h3>④ Tracked steps</h3><p>Checked ticket, approved plan and AC verdicts, all on the ticket</p></div>
+      <div class="card j" style="--t:8.4s"><h3>⑤ Cost awareness</h3><p>Model pinned per skill, spend posted on the ticket</p></div>
     </div>
   </div>
 </section>
 
-<!-- 19 · Practices -->
+<!-- 18 · Practices -->
 <section data-p="m v" class="alt">
   <!-- Speaker notes
-       Say "we haven't seen this elsewhere", not "nobody does it".
-       The strip credits the common playbook (Anthropic's Claude Code best practices, the multi-agent research post, Superpowers):
-       explore → plan → code, precise subagent handoffs, a separate checker, cheap models for routine work, deterministic code for maths.
-       CLAUDE.md instructions are advisory; hooks are deterministic. That's why hooks are on the roadmap.
-       04 is the best one to tell as a story: the pin silently did nothing until steps were spawned with the model set, hence the planner/executor split.
+       These are practices teams already know. The point is why we built them into the tool instead of leaving them to discipline.
+       05 is a good story: the model pin in a skill did nothing until each step was spawned with the model set, hence the planner/executor split.
+       07 + 08: the harness is just files in the repo. Each team shapes it to how they work; once it's there, the agent follows it every time.
+       02: product and BA people get their own onboarding, so they work with the same agents and the same repo as the developers.
        Stories for Q&A:
-       - Text written before a tool call can appear after the tool's prompt, so the plan gate ends its turn on the plan itself.
        - Agents running in the background can't ask the human anything, so anything that may need a person runs in the foreground.
        - Subagents started explaining their own tools to the user; now there's a rule: never mention your runtime. -->
-  <span class="kicker r">Practices</span>
-  <h2 class="r" style="margin-bottom:16px">What we added <em>to the playbook</em></h2>
-  <div class="follow r"><span class="lbl">We follow</span><span>plan first · precise handoffs · checker ≠ maker · cheap models for routine · code does the maths</span></div>
-  <p class="newlbl r">What's new</p>
-  <ol class="steal">
-    <li class="r"><span class="pn">01</span><div><h3>Assess before you delegate</h3><p>Score the repo first. Blockers cap the band; the score stays comparable.</p></div></li>
-    <li class="r"><span class="pn">02</span><div><h3>Your bar, written down and dated</h3><p><code>standards.md</code> holds your thresholds, flagged stale after 180 days.</p></div></li>
-    <li class="r"><span class="pn">03</span><div><h3>A passing test is a suspect</h3><p>Passes first time? Break the code. Still passes? The test is wrong.</p></div></li>
-    <li class="r"><span class="pn">04</span><div><h3>A model pin only works if you route it</h3><p>Read inline, a skill runs on the session model, so each step is spawned on its pin.</p></div></li>
-    <li class="r"><span class="pn">05</span><div><h3>Every gate leaves a trace on the ticket</h3><p>Approved plan, AC verdicts and token cost, where the team already looks.</p></div></li>
-  </ol>
+  <span class="kicker r">Learnings</span>
+  <h2 class="r" style="margin-bottom:10px">Good practices, <em>built in</em></h2>
+  <p class="lead r" style="max-width:none;margin-bottom:16px">None of these are new. We put them in the tool because "remember to do it" didn't hold up once agents joined the team.</p>
+  <div class="learn">
+    <div class="card s r"><span class="pn">01</span><h3>Assess before you delegate</h3><p>Score the repo first. Blockers cap the band; the score stays comparable.</p></div>
+    <div class="card t r"><span class="pn">02</span><h3>AI onboarding for every role</h3><p>People are becoming AI product engineers. Role onboarding brings product and BA closer to the code.</p></div>
+    <div class="card a r"><span class="pn">03</span><h3>A clear ticket comes first</h3><p>When the ticket is vague, people ask and agents guess. Every ticket goes through the same checklist.</p></div>
+    <div class="card j r"><span class="pn">04</span><h3>Small steps, checked as you go</h3><p>One acceptance criterion at a time, test first, small commits. Nothing merges unless CI is green, so main stays deployable.</p></div>
+    <div class="card f r"><span class="pn">05</span><h3>The right model for each job</h3><p>Commits and PRs don't need the biggest model. Each skill names its own.</p></div>
+    <div class="card s r"><span class="pn">06</span><h3>Every gate leaves a trace</h3><p>Approved plan, AC verdicts and token cost on the ticket, where the team already looks.</p></div>
+    <div class="card t r"><span class="pn">07</span><h3>Your process lives in the repo</h3><p>Agents and skills sit next to the code: versioned, reviewed and improved like code.</p></div>
+    <div class="card a r"><span class="pn">08</span><h3>Build your own</h3><p>Every team works differently. Write your way down once; nobody skips a step, because the steps are how the agent runs.</p></div>
+  </div>
+</section>
+
+<!-- 19 · Resources -->
+<section data-p="m v">
+  <span class="kicker r">Resources</span>
+  <h2 class="r" style="margin-bottom:22px">Want to <em>go deeper?</em></h2>
+  <div class="res r">
+    <a class="res-card" href="https://www.thoughtworks.com/insights/blog/generative-ai/how-sensible-harness-help-teams-create-ai-first-delivery-environment" target="_blank" rel="noopener">
+      <img src="assets/video-poster.jpg" alt="">
+      <span class="src">Thoughtworks blog</span>
+      <h3>How Sensible Harness can help teams create an AI-first delivery environment</h3>
+      <span class="res-by">Amy Pellegrini · María José Lalama · Vitória Toebe</span>
+    </a>
+    <a class="res-card" href="https://www.youtube.com/watch?v=HuS4O5KhtWQ" target="_blank" rel="noopener">
+      <img src="assets/xconf-maintenance-delivery.jpg" alt="">
+      <span class="src">XConf Europe 2026 · talk</span>
+      <h3>AI-First Software Maintenance &amp; AI-First Software Delivery</h3>
+      <span class="res-by">Vitória Toebe · Amy Pellegrini</span>
+    </a>
+    <a class="res-card" href="https://www.youtube.com/watch?v=4EPDghNJcqQ" target="_blank" rel="noopener">
+      <img src="assets/xconf-clarity-first.jpg" alt="">
+      <span class="src">XConf Europe 2026 · talk</span>
+      <h3>Clarity-First Method: Vibe-coding products without tech debt</h3>
+      <span class="res-by">María José Lalama</span>
+    </a>
+  </div>
 </section>
 
 <!-- 20 · Q&A -->
 <section class="cover alt" data-p="m v">
-  <h1 class="r">Q&amp;A</h1>
-  <div class="grid g3 team" style="margin:0 auto;max-width:1020px">
+  <h1 class="r" style="margin-bottom:14px">Q&amp;A</h1>
+  <div class="qa-wrap">
+    <div class="grid g3 team" style="margin:0;max-width:none">
     <div class="person r">
-      <img src="assets/amy.jpg" alt="Amy Pellegrini" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <img src="assets/amy.jpg" alt="Amy Pellegrini" style="width:clamp(70px,7.5vw,104px);height:clamp(70px,7.5vw,104px);margin-bottom:8px">
       <h3>Amy Pellegrini</h3>
       <p>Lead Developer</p>
       <p class="area">AI-First Software Delivery</p>
-      <img src="assets/qrcode_amy.png" alt="QR code for Amy Pellegrini" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+      <a class="lin" href="https://www.linkedin.com/in/amypellegrini/" target="_blank" rel="noopener"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0a66c2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11.1 9.6h2.5v1.15h.04c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.1c0-.98-.02-2.24-1.36-2.24-1.37 0-1.58 1.07-1.58 2.17V18h-2.6z"/></svg><span>/amypellegrini</span></a>
     </div>
     <div class="person r">
-      <img src="assets/majo.jpg" alt="Maria Jose Lalama" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <img src="assets/majo.jpg" alt="Maria Jose Lalama" style="width:clamp(70px,7.5vw,104px);height:clamp(70px,7.5vw,104px);margin-bottom:8px">
       <h3>Maria Jose Lalama</h3>
       <p>Senior AI Product Researcher</p>
       <p class="area">AI/Works<sup>™</sup></p>
-      <img src="assets/qrcode_maria.png" alt="QR code for Maria Jose Lalama" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+      <a class="lin" href="https://www.linkedin.com/in/mariajoselalama/" target="_blank" rel="noopener"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0a66c2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11.1 9.6h2.5v1.15h.04c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.1c0-.98-.02-2.24-1.36-2.24-1.37 0-1.58 1.07-1.58 2.17V18h-2.6z"/></svg><span>/mariajoselalama</span></a>
     </div>
     <div class="person r">
-      <img src="assets/vitoria.jpg" alt="Vitória Toebe" style="width:clamp(78px,8.5vw,118px);height:clamp(78px,8.5vw,118px);margin-bottom:10px">
+      <img src="assets/vitoria.jpg" alt="Vitória Toebe" style="width:clamp(70px,7.5vw,104px);height:clamp(70px,7.5vw,104px);margin-bottom:8px">
       <h3>Vitória Toebe</h3>
       <p>Lead Developer</p>
       <p class="area">AI-First Software Maintenance</p>
-      <img src="assets/qrcode_vitoria.png" alt="QR code for Vitória Toebe" style="width:clamp(104px,12.5vw,158px);height:auto;border-radius:0;border:none;box-shadow:none;object-fit:contain;display:block;margin:16px auto 0">
+      <a class="lin" href="https://www.linkedin.com/in/vitoriatoebe/" target="_blank" rel="noopener"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0a66c2"/><path fill="#fff" d="M6.9 9.6h2.6V18H6.9zM8.2 5.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11.1 9.6h2.5v1.15h.04c.35-.66 1.2-1.36 2.47-1.36 2.64 0 3.13 1.74 3.13 4V18h-2.6v-4.1c0-.98-.02-2.24-1.36-2.24-1.37 0-1.58 1.07-1.58 2.17V18h-2.6z"/></svg><span>/vitoriatoebe</span></a>
+    </div>
+    </div>
+    <div class="feedback r">
+      <a class="qr-slot" id="feedback-qr" href="https://forms.gle/roELcp96mMm5KLrZ7" target="_blank" rel="noopener"><img src="assets/qrcode_feedback.png" alt="QR code for the feedback form"></a>
+      <div><h3>How did we do?</h3><p>Scan to tell us what worked, what didn't, and what you'd like to see next.</p></div>
     </div>
   </div>
 </section>
@@ -792,6 +829,19 @@ the real report also has cache-read and cache-write columns</span></pre></div>
     const fit = slides[current()].querySelector('.fit');
     if (e.key === 'r' && fit) { fit.classList.add('off'); void fit.offsetWidth; fit.classList.remove('off'); }
     if (e.key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  // Demo videos: play from the start when the slide is on screen, pause when it leaves
+  const demoVids = [...document.querySelectorAll('video[data-demo]')];
+  const vio = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting) { v.currentTime = 0; v.play().catch(() => {}); } else v.pause();
+  }), { root: deck, threshold: .6 });
+  demoVids.forEach(v => vio.observe(v));
+  const slideVid = () => slides[current()].querySelector('video[data-demo]');
+  addEventListener('keydown', e => {
+    const v = slideVid(); if (!v) return;
+    if (e.key === 'p') v.paused ? v.play() : v.pause();
+    if (e.key === 'r') { v.currentTime = 0; v.play().catch(() => {}); }
   });
 </script>
 </body>
