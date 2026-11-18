@@ -677,26 +677,28 @@ Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
   <span class="kicker r">Where it fits</span>
   <h2 class="r" style="margin-bottom:14px">What others focus on, <em>what we add</em></h2>
   <div class="fit">
-    <div class="lane" style="grid-template-columns:minmax(150px,210px) repeat(8,1fr)">
-      <span class="stage" style="grid-row:1;grid-column:2;--t:0.06s">ONBOARD</span><span class="stage" style="grid-row:1;grid-column:3;--t:0.12s">ASSESS</span><span class="stage" style="grid-row:1;grid-column:4;--t:0.18s">SPECIFY</span><span class="stage" style="grid-row:1;grid-column:5;--t:0.24s">PLAN</span><span class="stage" style="grid-row:1;grid-column:6;--t:0.30s">BUILD</span><span class="stage" style="grid-row:1;grid-column:7;--t:0.36s">VERIFY</span><span class="stage" style="grid-row:1;grid-column:8;--t:0.42s">MERGE</span><span class="stage" style="grid-row:1;grid-column:9;--t:0.48s">COST</span>
+    <div class="lane" style="grid-template-columns:minmax(140px,190px) repeat(9,1fr)">
+      <span class="stage" style="grid-row:1;grid-column:2;--t:0.05s">SETUP</span><span class="stage" style="grid-row:1;grid-column:3;--t:0.10s">ASSESS</span><span class="stage" style="grid-row:1;grid-column:4;--t:0.15s">ONBOARD</span><span class="stage" style="grid-row:1;grid-column:5;--t:0.20s">SPECIFY</span><span class="stage" style="grid-row:1;grid-column:6;--t:0.25s">PLAN</span><span class="stage" style="grid-row:1;grid-column:7;--t:0.30s">BUILD</span><span class="stage" style="grid-row:1;grid-column:8;--t:0.35s">VERIFY</span><span class="stage" style="grid-row:1;grid-column:9;--t:0.40s">MERGE</span><span class="stage" style="grid-row:1;grid-column:10;--t:0.45s">COST</span>
       <span class="who" style="grid-row:2;--t:.9s">Spec Kit · Kiro</span>
-      <span class="bar" style="grid-row:2;grid-column:4 / 6;--t:1s"></span>
-      <span class="cap" style="grid-row:3;grid-column:4 / 10;--t:1.5s">spec-first: requirements → plan → tasks · Kiro adds hooks on events</span>
+      <span class="bar" style="grid-row:2;grid-column:5 / 7;--t:1s"></span>
+      <span class="cap" style="grid-row:3;grid-column:5 / 11;--t:1.5s">spec-first: requirements → plan → tasks · Kiro adds hooks on events</span>
       <span class="who" style="grid-row:4;--t:2.1s">Superpowers · BMAD</span>
-      <span class="bar grey" style="grid-row:4;grid-column:4 / 8;--t:2.2s"></span>
-      <span class="cap" style="grid-row:5;grid-column:4 / 10;--t:2.8s">skills and role agents: spec → plan → TDD → review</span>
+      <span class="bar grey" style="grid-row:4;grid-column:5 / 9;--t:2.2s"></span>
+      <span class="cap" style="grid-row:5;grid-column:5 / 11;--t:2.8s">skills and role agents: spec → plan → TDD → review</span>
       <span class="who sh" style="grid-row:6;--t:3.4s">FIOH</span>
-      <span class="bar sh" style="grid-row:6;grid-column:2 / 10;--t:3.6s;--d:1.4s"></span>
+      <span class="bar sh" style="grid-row:6;grid-column:2 / 11;--t:3.6s;--d:1.4s"></span>
       <span class="brk" data-n="①" style="grid-row:7;grid-column:2 / 3;--t:5.2s"></span>
-      <span class="brk" data-n="②" style="grid-row:7;grid-column:3 / 4;--t:6.2s"></span>
-      <span class="brk" data-n="③" style="grid-row:7;grid-column:4 / 9;--t:7.2s"></span>
-      <span class="brk" data-n="④" style="grid-row:7;grid-column:9 / 10;--t:8.2s"></span>
+      <span class="brk" data-n="②" style="grid-row:7;grid-column:3 / 4;--t:6.0s"></span>
+      <span class="brk" data-n="③" style="grid-row:7;grid-column:4 / 5;--t:6.8s"></span>
+      <span class="brk" data-n="④" style="grid-row:7;grid-column:5 / 10;--t:7.6s"></span>
+      <span class="brk" data-n="⑤" style="grid-row:7;grid-column:10 / 11;--t:8.4s"></span>
     </div>
-    <div class="cards" style="grid-template-columns:repeat(4,1fr)">
-      <div class="card a" style="--t:5.2s"><h3>① Onboarding built in</h3><p>Role onboarding for Dev, QA and BA, project onboarding from the assessment, and <code>/setup-workspace</code></p></div>
-      <div class="card t" style="--t:6.2s"><h3>② Scored first</h3><p>10 dimensions, with a score, band and blockers, before agents touch the repo</p></div>
-      <div class="card s" style="--t:7.2s"><h3>③ Wired to your tracker</h3><p><code>init</code> connects Jira and records it in the manifest. The BA agent guards the board; plan and AC verdicts land on the ticket</p></div>
-      <div class="card j" style="--t:8.2s"><h3>④ Cost per step</h3><p>Model pinned per skill, spend posted on the ticket</p></div>
+    <div class="cards" style="grid-template-columns:repeat(5,1fr)">
+      <div class="card s" style="--t:5.2s"><h3>① CLI connection</h3><p>One <code>init</code> wires your agent platform and issue tracker, recorded in the manifest</p></div>
+      <div class="card t" style="--t:6.0s"><h3>② Assessment</h3><p>10 dimensions, score, band and blockers before agents touch the repo</p></div>
+      <div class="card a" style="--t:6.8s"><h3>③ Onboarding &amp; setup</h3><p>Role onboarding, project onboarding from the assessment, <code>/setup-workspace</code></p></div>
+      <div class="card f" style="--t:7.6s"><h3>④ Tracked steps</h3><p>Checked ticket, approved plan and AC verdicts, all on the ticket</p></div>
+      <div class="card j" style="--t:8.4s"><h3>⑤ Cost awareness</h3><p>Model pinned per skill, spend posted on the ticket</p></div>
     </div>
   </div>
 </section>
@@ -775,7 +777,7 @@ Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
     </div>
     </div>
     <div class="feedback r">
-      <div class="qr-slot" id="feedback-qr" aria-label="QR code for the feedback form">QR<br>coming soon</div>
+      <a class="qr-slot" id="feedback-qr" href="https://www.youtube.com/watch?v=4EPDghNJcqQ" target="_blank" rel="noopener"><img src="assets/qrcode_feedback.png" alt="QR code for the feedback form"></a>
       <div><h3>How did we do?</h3><p>Scan to tell us what worked, what didn't, and what you'd like to see next.</p></div>
     </div>
   </div>
