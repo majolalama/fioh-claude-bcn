@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gates the agents can't skip</title>
-<meta name="description" content="Sensible Harness: a CLI harness that turns an existing repo into a governed environment for AI delivery with Claude Code. Claude Community, Barcelona.">
+<meta name="description" content="FIOH: a CLI harness that turns an existing repo into a governed environment for AI delivery with Claude Code. Claude Community, Barcelona.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -333,6 +333,25 @@
     .abars div { grid-template-columns: minmax(0, 140px) 1fr 30px 36px; } .tbl { font-size: 12px; display: block; overflow-x: auto; } .tbl td:first-child { white-space: normal; }
   }
   @media print { .fan .kids { grid-template-columns: repeat(6, 1fr) !important; } .qa2 { grid-template-columns: 1fr 1fr !important; } }
+
+  /* Demo slides: text left, recorded run right */
+  .demo-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 34px; align-items: center; max-width: 1260px; width: 100%; }
+  .demo-text { display: grid; gap: 11px; align-content: center; min-width: 0; }
+  .demo-text .card { padding: 11px 16px; } .demo-text .card p, .demo-text .card li { font-size: clamp(12px, 1.3vw, 16px); }
+  .demo-text .flow { gap: 6px; } .demo-text .flow .step { padding: 6px 10px; font-size: clamp(12px, 1.25vw, 16px); }
+  .demo-text .term pre { padding: 10px 14px; font-size: clamp(11px, 1.2vw, 15px); line-height: 1.5; } .demo-text .card h3 { margin-bottom: 6px; }
+  .demo-text li { font-size: clamp(14px, 1.5vw, 19px); }
+  .demo-note { margin: 0; color: var(--text-dim); font-size: clamp(13px, 1.35vw, 17px); }
+  .demo-vid { margin: 0; min-width: 0; }
+  .demo-vid video { display: block; width: 100%; max-height: 62vh; object-fit: contain; background: #0f1e2a; cursor: pointer;
+    border-radius: 12px; border: 1px solid rgba(159,186,196,.3); box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+  .demo-vid figcaption { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px;
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .kids-mini { display: grid; gap: 8px; font-family: var(--mono); font-size: clamp(12px, 1.3vw, 16px); color: var(--mist); }
+  .kids-mini > span { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(159,186,196,.22); border-radius: 10px; padding: 7px 12px; }
+  @media (max-width: 900px) { .demo-split { grid-template-columns: 1fr; } }
+  @media print { .demo-split { grid-template-columns: minmax(0,1fr) minmax(0,1.08fr) !important; } }
 </style>
 </head>
 <body>
@@ -425,30 +444,16 @@
 
 <!-- 07 · What init writes -->
 <section data-p="v" class="tight">
-  <span class="kicker demo r">Demo · setup</span>
-  <h2 class="r" style="margin-bottom:14px">What <code>init</code> <em>writes</em></h2>
-  <div class="flow r" style="margin-bottom:18px">
-    <span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span>
-    <span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span>
-    <span class="step"><b>Agents</b> BA · Dev · QA</span>
-  </div>
-  <div class="split r" style="max-width:1150px">
-    <div class="term sm"><div class="bar"><i></i><i></i><i></i><span class="ttl" style="margin-left:10px;color:var(--text-dim);font-size:.85em">.claude/skills/tdd/SKILL.md</span></div><pre><span class="c">---</span>
-<span class="p">name:</span> tdd
-<span class="p">description:</span> Use whenever the user asks
-  to run one TDD cycle for a single
-  acceptance criterion…
-<span class="p">model:</span> <span class="y">sonnet</span>
-<span class="c">---</span>
-<span class="m">## Step 2</span> failing test (red)
-<span class="m">## Step 3</span> make it pass (green)
-<span class="m">## Step 4</span> refactor (while green)
-<span class="m">## Step 5</span> stop: green, <b>uncommitted</b></pre></div>
-    <div style="display:grid;gap:14px;align-content:start">
-      <div class="card j"><h3><span class="pill haiku">haiku</span> 15 skills · mechanical</h3><p>commit · commit-and-push · open-pr · check-ci · pickup-issue · jira · track-tokens · the agent facades · onboarding</p></div>
-      <div class="card s"><h3><span class="pill sonnet">sonnet</span> 19 skills · judgement</h3><p>tdd · close-issue · address-pr-comments · qa-test · the 14 <code>assess-*</code> skills · explain-assessment</p></div>
-      <p style="margin:0;color:var(--text-dim);font-size:clamp(13px,1.35vw,17px)">The <code>description</code> is the trigger. One job per skill, so each one can run alone, be chained, or be handed to an agent.</p>
+  <span class="kicker demo r">Demo 1 · Setup</span>
+  <h2 class="r" style="margin-bottom:18px">What <code>init</code> <em>writes</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="flow"><span class="step"><b>CLI</b> <code>init</code> <code>doctor</code></span><span class="arrow">▸</span><span class="step"><b>Skills</b> small, reusable</span><span class="arrow">▸</span><span class="step"><b>Agents</b> BA · Dev · QA</span></div>
+      <div class="card j"><h3><span class="pill haiku">haiku</span> 15 skills · mechanical</h3><p>commit · open-pr · check-ci · pickup-issue · jira · track-tokens · onboarding</p></div>
+      <div class="card s"><h3><span class="pill sonnet">sonnet</span> 19 skills · judgement</h3><p>tdd · close-issue · address-pr-comments · qa-test · the <code>assess-*</code> skills</p></div>
+      <p class="demo-note">The <code>description</code> is the trigger and <code>model:</code> pins the model. One job per skill, so each one can run alone, be chained, or be handed to an agent.</p>
     </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/setup.mp4" poster="assets/demo/setup.jpg" muted playsinline preload="auto"></video><figcaption><span>sensible-harness init, then a skill pinned to haiku</span><span>recorded run · 1.25–1.5×</span></figcaption></figure>
   </div>
 </section>
 
@@ -466,98 +471,92 @@
 
 <!-- 09 · Assessment -->
 <section data-p="v" class="alt">
-  <span class="kicker demo r">Demo 03 Assess</span>
+  <span class="kicker demo r">Demo 2 · Assess</span>
   <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">Before going AI-first, <em>know your repo</em></h2>
-  <p class="lead r" style="max-width:none;font-size:clamp(16px,1.8vw,22px);margin-bottom:6px"><code>/assess-repo</code> scores it across 10 dimensions, so you know how much you can trust agents on it</p>
-  <p class="r" style="margin:0 0 20px;color:var(--text-dim);font-family:var(--mono);font-size:clamp(12px,1.3vw,16px)">Your standards first. Thoughtworks defaults only where you have none.</p>
-  <div class="row r" style="gap:28px">
-  <div class="bars" style="flex:1 1 600px;font-size:clamp(12px,1.35vw,16px)">
-    <div><span>Architecture</span><span class="b" style="--c:var(--jade);--w:85%"></span></div>
-    <div><span>Dependency Health</span><span class="b" style="--c:var(--jade);--w:78%"></span></div>
-    <div><span>Code Quality Infrastructure</span><span class="b" style="--c:var(--sapphire);--w:72%"></span></div>
-    <div><span>Documentation</span><span class="b" style="--c:var(--sapphire);--w:64%"></span></div>
-    <div><span>CI/CD &amp; Delivery Conventions</span><span class="b" style="--c:var(--turmeric);--w:58%"></span></div>
-    <div><span>Test Quality</span><span class="b" style="--c:var(--turmeric);--w:55%"></span></div>
-    <div><span>Developer Experience</span><span class="b" style="--c:var(--turmeric);--w:52%"></span></div>
-    <div><span>Observability</span><span class="b" style="--c:var(--flamingo);--w:35%"></span></div>
-    <div><span>AI Governance</span><span class="b" style="--c:var(--flamingo);--w:30%"></span></div>
-    <div><span>Security Baseline</span><span class="b" style="--c:var(--flamingo);--w:20%"></span></div>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <p class="lead" style="margin:0"><code>/assess-repo</code> scores the repo across <b style="color:#fff">10 dimensions</b>, so you know how much you can trust agents on it</p>
+      <p class="demo-note" style="font-family:var(--mono)">Your standards first. Thoughtworks defaults only where you have none.</p>
+      <div class="card s"><h3>Dashboard</h3><p>Score, band and blockers on one page. Blockers cap the band.</p></div>
+      <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
+      <p class="demo-note">Gaps become tickets, and the next assessment shows <b style="color:#fff">how things have changed</b>.</p>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/assess.mp4" poster="assets/demo/assess.jpg" muted playsinline preload="auto"></video><figcaption><span>/assess-repo → dashboard → per-dimension report</span><span>recorded run · 1–1.5×</span></figcaption></figure>
   </div>
-  <div style="flex:0 1 300px;display:grid;gap:14px">
-    <div class="card s"><h3>Dashboard</h3><p>Score, band and blockers on one page</p></div>
-    <div class="card j"><h3>10 reports</h3><p>One per dimension, every finding cited to a file and line</p></div>
-  </div>
-  </div>
-  <p class="lead r" style="margin:22px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">Gaps become tickets, the team delivers them, and the next assessment shows <b style="color:#fff">how things have changed</b> since this one</p>
 </section>
 
 <!-- 10 · Onboarding -->
 <section data-p="v">
-  <span class="kicker demo r">Demo 03 Onboard</span>
-  <h2 class="r" style="font-size:clamp(28px,4vw,50px)">The assessment writes the <em>onboarding</em></h2>
-  <p class="lead r" style="max-width:none">Generated from this repo’s own analysis. Not a template.</p>
-  <div class="grid g2">
-    <div class="card t r"><h3><code>/onboard-me</code></h3><p>Understand the repo</p>
-      <ul><li>Architecture and where things live</li><li>How to test and ship a change</li><li>Known traps the assessment found</li><li>What agents must not do alone</li></ul></div>
-    <div class="card j r"><h3><code>/setup-workspace</code></h3><p>Get it running</p>
-      <ul><li>Prerequisites, checked in order</li><li>Install, database, each service</li><li>Verify the whole environment</li><li>Asks before changing your machine</li></ul></div>
+  <span class="kicker demo r">Demo 3 · Onboard</span>
+  <h2 class="r" style="font-size:clamp(28px,4vw,50px);margin-bottom:18px">The assessment writes the <em>onboarding</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <p class="lead" style="margin:0">Generated from this repo’s own analysis. Not a template.</p>
+      <div class="card t"><h3><code>/onboard-me</code> · understand the repo</h3><p>Architecture, how to test and ship, known traps, what agents must not do alone</p></div>
+      <div class="card j"><h3><code>/setup-workspace</code> · get it running</h3><p>Prerequisites in order, install each service, verify, ask before changing your machine</p></div>
+      <p class="demo-note">Same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits.</p>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/onboard.mp4" poster="assets/demo/onboard.jpg" muted playsinline preload="auto"></video><figcaption><span>/onboard-ba, then /onboard-me on the assessed repo</span><span>recorded run · 1.25–2×</span></figcaption></figure>
   </div>
-  <p class="lead r" style="margin:26px 0 0;max-width:none;font-size:clamp(16px,1.8vw,22px)">A faster start for every new teammate, with the same context for people and agents. <b style="color:#fff">Generated, then owned</b>: committed Markdown your team edits</p>
 </section>
 
 <!-- 11 · BA agent -->
 <section data-p="m">
-  <span class="kicker sec-g r">Requirements into tickets</span>
-  <h2 class="r" style="margin-bottom:20px">The BA agent <em>guards the ticket</em></h2>
-  <div class="row r" style="align-items:flex-start;gap:30px;max-width:1150px">
-    <div style="flex:1 1 560px"><img class="shot" src="assets/still-ba.jpg" alt="BA agent drafts GV-94 against the mandatory checklist and creates it on the Jira board"><p class="shot-cap">From the video · chapter 03</p></div>
-    <ul style="flex:1 1 360px;gap:14px">
-      <li style="font-size:clamp(15px,1.7vw,21px)"><b>Mandatory checklist</b>: Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
-      <li style="font-size:clamp(15px,1.7vw,21px)">Asks with <code>AskUserQuestion</code> when scope is unclear</li>
-      <li style="font-size:clamp(15px,1.7vw,21px)">Jira through <code>acli</code>, using the <code>jira</code> skill's commands, <b>never from memory</b></li>
-      <li style="font-size:clamp(15px,1.7vw,21px)">Assessment gaps arrive with their questions as Context</li>
-    </ul>
+  <span class="kicker demo r">Demo 4 · BA agent</span>
+  <h2 class="r" style="margin-bottom:18px">The BA agent <em>guards the ticket</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <ul style="gap:14px">
+        <li><b>Mandatory checklist</b>: Context · Scope · Acceptance criteria · Out of scope · Dependencies</li>
+        <li>Asks with <code>AskUserQuestion</code> when scope is unclear</li>
+        <li>Jira through <code>acli</code>, using the <code>jira</code> skill's commands, <b>never from memory</b></li>
+        <li>Assessment gaps arrive with their questions as Context</li>
+      </ul>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/ba.mp4" poster="assets/demo/ba.jpg" muted playsinline preload="auto"></video><figcaption><span>/business-analyst turns assessment gaps into Jira tickets</span><span>recorded run · 1.25–2.5×</span></figcaption></figure>
   </div>
 </section>
 
 <!-- 12 · Dev plan -->
 <section data-p="v">
-  <span class="kicker demo r">Demo 05 Dev plan</span>
-  <h2 class="r">Dev agent: <em>plan first</em></h2>
-  <div class="flow r" style="margin-bottom:26px">
-    <span class="step"><code>/dev GV-n</code></span><span class="arrow">▸</span>
-    <span class="step">Ticket check</span><span class="arrow">▸</span>
-    <span class="step">Branch</span><span class="arrow">▸</span>
-    <span class="step">Plan</span><span class="arrow">▸</span>
-    <span class="step" style="border-color:var(--turmeric)">👤 Approve</span><span class="arrow">▸</span>
-    <span class="step">Saved to ticket</span>
+  <span class="kicker demo r">Demo 5 · Dev plan</span>
+  <h2 class="r" style="margin-bottom:18px">Dev agent: <em>plan first</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="flow"><span class="step"><code>/dev GV-n</code></span><span class="arrow">▸</span><span class="step">Ticket check</span><span class="arrow">▸</span><span class="step">Branch</span><span class="arrow">▸</span><span class="step">Plan</span><span class="arrow">▸</span><span class="step" style="border-color:var(--turmeric)">👤 Approve</span><span class="arrow">▸</span><span class="step">Saved to ticket</span></div>
+      <ul>
+        <li>One plan step per acceptance criterion</li>
+        <li>One round of changes before approval</li>
+        <li>Nothing runs until a person approves the plan</li>
+      </ul>
+    </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/dev-plan.mp4" poster="assets/demo/dev-plan.jpg" muted playsinline preload="auto"></video><figcaption><span>/dev GV-87 plans in the background; the plan lands on the ticket</span><span>recorded run · 1–1.25×</span></figcaption></figure>
   </div>
-  <ul>
-    <li class="r">One plan step per acceptance criterion</li>
-    <li class="r">One round of changes before approval</li>
-  </ul>
 </section>
 
 <!-- 13 · Fan-out -->
 <section data-p="v" class="alt">
-  <span class="kicker demo r">Demo · execution</span>
-  <h2 class="r" style="margin-bottom:22px">One spawn, <em>one model, per step</em></h2>
-  <div class="fan r">
-    <div class="root"><b>Main agent</b><small>session model · executes the approved plan</small></div>
-    <div class="lines"></div>
-    <div class="kids">
-      <div class="kid"><b>tdd</b><span class="pill sonnet">sonnet</span><span class="w">AC1 red → green</span></div>
-      <div class="kid"><b>commit</b><span class="pill haiku">haiku</span><span class="w">feat(events): seed dinner</span></div>
-      <div class="kid"><b>tdd</b><span class="pill sonnet">sonnet</span><span class="w">AC2 red → green</span></div>
-      <div class="kid"><b>commit</b><span class="pill haiku">haiku</span><span class="w">feat(rsvp): guest RSVP</span></div>
-      <div class="kid"><b>open-pr</b><span class="pill haiku">haiku</span><span class="w">PR #142 → main</span></div>
-      <div class="kid"><b>check-ci</b><span class="pill haiku">haiku</span><span class="w">✔ green</span></div>
+  <span class="kicker demo r">Demo 6 · Execution</span>
+  <h2 class="r" style="margin-bottom:18px">One spawn, <em>one model, per step</em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
+      <div class="kids-mini">
+        <span><b>tdd</b> <span class="pill sonnet">sonnet</span> AC1 red → green</span>
+        <span><b>commit</b> <span class="pill haiku">haiku</span> feat(events): seed dinner</span>
+        <span><b>tdd</b> <span class="pill sonnet">sonnet</span> AC2 red → green</span>
+        <span><b>open-pr</b> · <b>check-ci</b> <span class="pill haiku">haiku</span></span>
+      </div>
+      <div class="term sm"><pre><span class="c"># same prompt shape for every spawn</span>
+Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span>
+and follow it exactly.
+Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span></pre></div>
+      <ul>
+        <li>Full test suite between <code>tdd</code> steps</li>
+        <li>Stop and ask on any failure</li>
+        <li>Never re-scope the plan: replan with the human</li>
+      </ul>
     </div>
-  </div>
-  <div class="term sm r" style="margin-top:20px;max-width:1150px"><pre><span class="c"># every spawn gets the same prompt shape; nothing improvised</span>
-Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span> and follow it exactly. Inputs: <span class="ok">&lt;verbatim from the plan&gt;</span>.</pre></div>
-  <div class="flow guards r" style="margin-top:14px">
-    <span class="step">Full test suite between <code>tdd</code> steps</span><span class="step">Stop and ask on any failure</span><span class="step">Never re-scope the plan: replan with the human</span>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/execution.mp4" poster="assets/demo/execution.jpg" muted playsinline preload="auto"></video><figcaption><span>/dev GV-94 runs the approved plan; token cost lands on the ticket</span><span>recorded run · 1–1.5×</span></figcaption></figure>
   </div>
 </section>
 
@@ -585,14 +584,14 @@ Load <span class="y">.claude/skills/&lt;skill&gt;/SKILL.md</span> and follow it 
 
 <!-- 15 · QA + close-issue -->
 <section data-p="v" class="tight">
-  <span class="kicker demo r">Demo · verification</span>
-  <h2 class="r" style="margin-bottom:20px">QA verifies. <em><code>close-issue</code></em></h2>
-  <div class="row r" style="align-items:flex-start;gap:28px;max-width:1180px">
-    <div style="flex:1 1 560px"><img class="shot" src="assets/still-qa.jpg" alt="QA agent test plan for GV-94: five scenarios across two ACs, all passing, recommendation close"><p class="shot-cap">From the video · chapter 05</p></div>
-    <div style="flex:1 1 360px;display:grid;gap:12px">
+  <span class="kicker demo r">Demo 7 · Verification</span>
+  <h2 class="r" style="margin-bottom:18px">QA verifies. <em><code>close-issue</code></em></h2>
+  <div class="demo-split">
+    <div class="demo-text r">
       <div class="card a"><h3><code>qa-test</code></h3><ul><li>Test plan from the ACs: happy path, edge, negative</li><li>Runs the feature; verdict to issue + PR</li><li>Recommends fixes, never applies them</li></ul></div>
-      <div class="card f"><h3><code>close-issue</code></h3><ul><li>Pass/fail per AC against the diff</li><li>Any AC unverified → <b style="color:#fff">no merge</b></li><li>CI failing → <b style="color:#fff">no merge</b></li><li>Squash-merge, then post token spend</li></ul></div>
+      <div class="card f"><h3><code>close-issue</code></h3><ul><li>Pass/fail per AC against the diff</li><li>Any AC unverified or CI failing → <b style="color:#fff">no merge</b></li><li>Squash-merge, then post token spend</li></ul></div>
     </div>
+    <figure class="demo-vid r"><video data-demo src="assets/demo/qa.mp4" poster="assets/demo/qa.jpg" muted playsinline preload="auto"></video><figcaption><span>/qa-test GV-87 finds no branch, so it stops and says why</span><span>recorded run · 1.3×</span></figcaption></figure>
   </div>
 </section>
 
@@ -792,6 +791,19 @@ the real report also has cache-read and cache-write columns</span></pre></div>
     const fit = slides[current()].querySelector('.fit');
     if (e.key === 'r' && fit) { fit.classList.add('off'); void fit.offsetWidth; fit.classList.remove('off'); }
     if (e.key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  // Demo videos: play from the start when the slide is on screen, pause when it leaves
+  const demoVids = [...document.querySelectorAll('video[data-demo]')];
+  const vio = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting) { v.currentTime = 0; v.play().catch(() => {}); } else v.pause();
+  }), { root: deck, threshold: .6 });
+  demoVids.forEach(v => { vio.observe(v); v.addEventListener('click', () => v.paused ? v.play() : v.pause()); });
+  const slideVid = () => slides[current()].querySelector('video[data-demo]');
+  addEventListener('keydown', e => {
+    const v = slideVid(); if (!v) return;
+    if (e.key === 'p') v.paused ? v.play() : v.pause();
+    if (e.key === 'r') { v.currentTime = 0; v.play().catch(() => {}); }
   });
 </script>
 </body>
