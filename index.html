@@ -34,7 +34,7 @@
   }
   .deck { height: 100vh; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; position: relative; }
   section { min-height: 100vh; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
-    padding: 9vh max(20px, 7vw) 8vh; position: relative;
+    padding: 9vh max(20px, 7vw, calc((100vw - 1180px) / 2)) 8vh; position: relative;
     background: radial-gradient(900px 500px at 85% 10%, rgba(99,79,125,.28), transparent 60%),
                 radial-gradient(800px 500px at 0% 100%, rgba(71,161,173,.16), transparent 60%); }
   section.alt { background: radial-gradient(900px 500px at 10% 0%, rgba(242,97,122,.12), transparent 60%),
